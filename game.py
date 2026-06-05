@@ -13,9 +13,23 @@ stratagems = [ # Stratagem codes
     {"codename": "ENA", "name": "Eagle Napalm Airstrike", "code": ("↑","→","↓","↑"), "len": 4},
     {"codename": "E110RP", "name": "Eagle 110mm Rocket Pods", "code": ("↑","→","↑","←"), "len": 4},
     {"codename": "E5B", "name": "Eagle 500kg Bomb", "code": ("↑","→","↓","↓","↓"), "len": 5},
+
+    ## Orbital Strikes 
+    {"codename": "OPS", "name": "Orbital Precision Strike", "code": ("→","→","↑"), "len": 3},
+    {"codename": "OGB", "name": "Orbital Gatling Barrage", "code": ("→","↓","←","↑","↑" ), "len": 5},
+    {"codename": "OGS", "name": "Orbital Gas Strike", "code": ("↑","→","↓","↓","↓"), "len": 5},
+    {"codename": "O120HEB", "name": "Orbital 120mm HE Barrage", "code": ("→","→","↓","←","→","↓"), "len": 6},
+    {"codename": "OAS", "name": "Orbital Airburst Strike", "code": ("→","→","→"), "len": 3},
+    {"codename": "OSS", "name": "Orbital Smoke Strike", "code": ("→","→","↓","↑"), "len": 4},
+    {"codename": "OEMSS", "name": "Orbital EMS Strike", "code": ("→","→","←","↓",), "len": 4},
+    {"codename": "O380HEB", "name": "Orbital 380mm HE Barrage", "code": ("→","↓","↑","↑","←","↓","↓"), "len": 7},
+    {"codename": "OWB", "name": "Orbital Walking Barrage", "code": ("→","↓","→","↓","→","↓"), "len": 6},
+    {"codename": "OL", "name": "Orbital Laser", "code": ("→","↓","↑","→","↓"), "len": 5},
+    {"codename": "ONB", "name": "Orbital Napalm Barrage", "code": ("→","→","↓","←","→","↑"), "len": 6},
+    {"codename": "ORS", "name": "Orbital Railcannon Strike", "code": ("→","↑","↓","↓","→"), "len": 5},
 ]
 
-display_bg = pygame.Color(255, 255, 255) # background colour for pygame display
+display_bg = pygame.Color(0, 0, 0) # background colour for pygame display
 class App:
     def __init__(self):
         self._running = True # sets var to true when game runs
