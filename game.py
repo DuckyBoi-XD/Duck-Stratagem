@@ -44,8 +44,7 @@ class App:
         pygame.init()
         self.stratagems = (ESR, EA, ECB, ESS, ENA, E110RP, ESB, OPS, OGB, OGS, O120HEB, OAS, OSS, OEMSS, O380HEB, OWB, OL, ONB, ORS) # Stratagem codes
         self.display = pygame.display.set_mode((700, 500), pygame.HWSURFACE | pygame.DOUBLEBUF) # creates pygame window (size)
-        self.image = pygame.transform.smoothscale(pygame.image.load("arrow_down.png").convert_alpha(), (50, 50))
-        font = pygame.font.Font(None, 36)
+        font = pygame.font.Font("font.ttf", 36)
 
         '''Images'''
         self.arrow_up = pygame.transform.smoothscale(pygame.image.load("arrow_up.png").convert_alpha(), (50, 50))
@@ -69,7 +68,8 @@ class App:
         SAC = 0 # stratagem_amount_count
         while True: # creates a list of stratagems for the user to complete
             if SAC < self.mode_amount: # checks if it has created enough codes
-                self.stratagem_list_code_image.append(random.choice(self.stratagems)["codeImageList"])
+                self.stratagem_list_code_image.append(random.choice(self.stratagems)["codeImageList"]) 
+                # ^ grabs a random stratagem image code list and adds it to the stratagem list code images list
                 SAC += 1
             else:
                 break
@@ -80,9 +80,11 @@ class App:
 
     def code_image_display(self):
         '''Function that will grab the first code image of the list and display it'''
-        self.display.blit((self.stratagem_list_code_image[0])[0], (100, 100)) # displays text
-        self.display.blit((self.stratagem_list_code_image[0])[0], (101, 100)) # displays text - bolder
-        self.display.blit((self.stratagem_list_code_image[0])[0], (100, 101)) # displays text - bolder
+        for i in range(len(self.stratagem_list_code_image[0])):
+            tcinp = 100 + (i*55) # temp code image number position
+            self.display.blit((self.stratagem_list_code_image[0])[i], (tcinp, 100)) # displays code image
+            self.display.blit((self.stratagem_list_code_image[0])[i], (tcinp+1, 100)) # displays code image - bolder
+            self.display.blit((self.stratagem_list_code_image[0])[i], (tcinp, 101)) # displays code image - bolder
 
     def on_event(self, event):
         if event.type == pygame.QUIT: # if the game is exitted out of
@@ -99,7 +101,7 @@ class App:
         while(self._running): # constant loop when _running is true
             self.FPS.tick(60) # sets fps to 60
             
-            self.code_image_display()
+            self.code_image_display() # displays code image function
 
             for event in pygame.event.get(): # grabs the events (keyboard triggers etc)
                 self.on_event(event) # checks if the game has 'quitted'?
