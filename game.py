@@ -30,10 +30,15 @@ ORS = {"name": "Orbital Railcannon Strike", "codeName": "ORS", "code": "21332", 
 display_bg = pygame.Color(0, 0, 0) # background colour for pygame display
 class App:
     def __init__(self):
+        self.image_names = ("arrow_up.png", "arrow_right.png", "arrow_down.png", "arrow_left.png") # list of the names of the file
+        self.image_names_var = ("arrow_up", "arrow_right", "arrow_down", "arrow_left", "Barrow_up", "Barrow_right", "Barrow_down", "Barrow_left") # the variable name options
+        self.image_var_dict = {}
+
         self._running = True # sets var to true when game runs
         self._display_surf = None # def the var for display
         self.FPS = pygame.time.Clock() # def FPS by clock
-        self.stratagem_list_code_image = [] # list of stratagems code for the user to complete
+
+        self.stratagemList_ci_hand = [] # list of stratagems code for the user to complete
         self.mode = None # how hard/many stratagems
         self.mode_options = ("Trivial", "Hard", "Super Helldive") # the different difficulties
         self.mode_amount = 5 # temp mode ammount
@@ -41,7 +46,7 @@ class App:
         self.name_stratagem_text = ""
         self.stratagem_text = ""
 
-        self.code_completion = 0
+        self.code_completion = 1
     def on_init(self):
         pygame.init()
         self.stratagems = (ESR, EA, ECB, ESS, ENA, E110RP, ESB, OPS, OGB, OGS, O120HEB, OAS, OSS, OEMSS, O380HEB, OWB, OL, ONB, ORS) # Stratagem codes
@@ -49,56 +54,76 @@ class App:
         font = pygame.font.Font("font.ttf", 36) # font
 
         '''Images'''
-        image = pygame.transform.smoothscale(pygame.image.load("arrow_up.png").convert_alpha(), (50, 50))
-        image.set_alpha(50)
-        self.arrow_up = image
-        image = pygame.transform.smoothscale(pygame.image.load("arrow_right.png").convert_alpha(), (50, 50))
-        image.set_alpha(50)
-        self.arrow_right = image
-        image = pygame.transform.smoothscale(pygame.image.load("arrow_down.png").convert_alpha(), (50, 50))
-        image.set_alpha(50)
-        self.arrow_down = image
-        image = pygame.transform.smoothscale(pygame.image.load("arrow_left.png").convert_alpha(), (50, 50))
-        image.set_alpha(50)
-        self.arrow_left = image
-        # ^ loads the png as a pygame image, then formats/prepares the image, allows the changing of size and cleans it up, sets the size to 50w and 50l,
-        # then assigns it to the variable image, then adjustes the opacity, then assigns the value to the variable
+        for i in range(len(self.image_names_var)): # find length of the list so for each index
+            if i <= 3: # if the index < 4
+                image = pygame.transform.smoothscale(pygame.image.load(self.image_names[i]).convert_alpha(), (50, 50))
+                # ^ creates an image by grabbing the image name with the same index in inmage_name (which should be the same direction)
+                image.set_alpha(50) # turn the opacity to 50/255
+                self.image_var_dict[self.image_names_var[i]] = image 
+                # ^ adds a dict to the dict(image_var_dict) which the key is the value from image_name_var which it was in the begining
+            elif i > 3: # if the index is bigger than 3 (indicating its a bold/bright arrow (last 4 in the list))
+                y = i # creates a temp variable y
+                y -= 4 # minuses 4 to match up with the image_name (y-4 will be the same direction, y is just it bolded/brigther)
+                image = pygame.transform.smoothscale(pygame.image.load(self.image_names[y]).convert_alpha(), (50, 50))
+                # ^ creates an image by grabbing the image name in inmage_names which is the same index just minused 4 which will be the same direction
+                image.set_alpha(255) # makes the image fully opaque
+                self.image_var_dict[self.image_names_var[i]] = image
+                # ^ adds a dict to the dict(image_var_dict) which key is the i from before
 
-        for i in self.stratagems:
-            i["codeImageList"] = []
-            for y in i["code"]:
-                if y == "1":
-                    i["codeImageList"].append(self.arrow_up)
-                elif y == "2":
-                    i["codeImageList"].append(self.arrow_right)
+        '''Creating list of images for each dictonary in the stratagem list'''
+        # code that goes through the codes of the stratagem and creates a list of images which is corrolates to the code 
+        for i in self.stratagems: # for dict in the stratagem list
+            i["codeImageList"] = [] # create a empty dict key/list for the images
+            for y in i["code"]: # for every character in the code
+                if y == "1": # if the character is 1
+                    i["codeImageList"].append(self.image_var_dict[self.image_names_var[0]]) 
+                    # ^ goes to the image dict (image_var_dict) and grabs the first or index 0 valve and adds it to the codeImageList in the dict 
+                    # since 1 = up and the index 0 is up
+                elif y == "2": # checks if it is anyother number
+                    i["codeImageList"].append(self.image_var_dict[self.image_names_var[1]])
                 elif y == "3":
-                    i["codeImageList"].append(self.arrow_down)
+                    i["codeImageList"].append(self.image_var_dict[self.image_names_var[2]])
                 elif y == "4":
-                    i["codeImageList"].append(self.arrow_left)
+                    i["codeImageList"].append(self.image_var_dict[self.image_names_var[3]])
                 else:
                     print("Brokey Brokey Fix Your Codey")
+
+        '''How many stratagems(code images) are added in a hand'''
         SAC = 0 # stratagem_amount_count
         while True: # creates a list of stratagems for the user to complete
             if SAC < self.mode_amount: # checks if it has created enough codes
-                self.stratagem_list_code_image.append(random.choice(self.stratagems)["codeImageList"]) 
+                self.stratagemList_ci_hand.append(random.choice(self.stratagems)["codeImageList"]) 
                 # ^ grabs a random stratagem image code list and adds it to the stratagem list code images list
-                SAC += 1
+                # A random dict/variable in stratagems and grabs the "codeImageList" and adds it to another list which is the playing hand
+                SAC += 1 # adds 1 to the count to indicated another has been added
             else:
                 break
-
+        
         self.text_surface = font.render("Manual Text", True, (255, 255, 255)) # defines text to be displayed
         pygame.display.set_caption("Duck Stratagem") # Display window name
         self._running = True # sets var to true when game runs again?
 
     def code_image_display_active(self, completion):
         '''Function that will grab the first code image of the list and display it'''
-        for i in range(completion):
-            self.stratagem_list_code_image.pop(i)
-        for i in range(len(self.stratagem_list_code_image[0])):
+        print(self.stratagemList_ci_hand)
+        print()
+        print(self.stratagemList_ci_hand[0])
+        print()
+        if completion != 0: # if the completion number is not 0
+            completion_index = completion - 1 # minus 1 by the number (so it corrosponds with the index)
+            temp_image = (self.stratagemList_ci_hand[0])[completion_index] # create a temp variable of the first code image of the code
+            for i in range(4): # for 0-3
+                if self.image_var_dict[self.image_names_var[i]] == temp_image: 
+                # ^ goes through the first 4 keys (i changing) to see if the value is the same inwhich, we know what the code image is
+                    (self.stratagemList_ci_hand[0])[completion_index] = self.image_var_dict[self.image_names_var[i+4]]
+                    # ^ changes the code image to a bolder/brigher image
+                    # ^ in the players hand, the first code, goes into the first image/value and changes into the dict value of the original image + 4
+
+        for i in range(len(self.stratagemList_ci_hand[0])):
             tcinp = 100 + (i*55) # temp code image number position
-            self.display.blit((self.stratagem_list_code_image[0])[i], (tcinp, 100)) # displays code image
-            self.display.blit((self.stratagem_list_code_image[0])[i], (tcinp+1, 100)) # displays code image - bolder
-            self.display.blit((self.stratagem_list_code_image[0])[i], (tcinp, 101)) # displays code image - bolder
+            self.display.blit((self.stratagemList_ci_hand[0])[i], (tcinp, 100)) # displays code image
+            self.display.blit((self.stratagemList_ci_hand[0])[i], (tcinp+1, 100)) # displays code image - bolder
+            self.display.blit((self.stratagemList_ci_hand[0])[i], (tcinp, 101)) # displays code image - bolder
 
 
     def on_event(self, event):
