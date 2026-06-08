@@ -39,6 +39,7 @@ class App:
         self.FPS = pygame.time.Clock() # def FPS by clock
 
         self.stratagemList_ci_hand = [] # list of stratagems code for the user to complete
+        self.stratagemList_hand = []
         self.mode = None # how hard/many stratagems
         self.mode_options = ("Trivial", "Hard", "Super Helldive") # the different difficulties
         self.mode_amount = 5 # temp mode ammount
@@ -46,7 +47,7 @@ class App:
         self.name_stratagem_text = ""
         self.stratagem_text = ""
 
-        self.code_completion = 1
+        self.code_completion = 4
     def on_init(self):
         pygame.init()
         self.stratagems = (ESR, EA, ECB, ESS, ENA, E110RP, ESB, OPS, OGB, OGS, O120HEB, OAS, OSS, OEMSS, O380HEB, OWB, OL, ONB, ORS) # Stratagem codes
@@ -92,12 +93,16 @@ class App:
         SAC = 0 # stratagem_amount_count
         while True: # creates a list of stratagems for the user to complete
             if SAC < self.mode_amount: # checks if it has created enough codes
-                self.stratagemList_ci_hand.append(random.choice(self.stratagems)["codeImageList"]) 
+                temp_stratagem = random.choice(self.stratagems)
+                self.stratagemList_hand.append(temp_stratagem)
+                self.stratagemList_ci_hand.append(temp_stratagem["codeImageList"]) 
                 # ^ grabs a random stratagem image code list and adds it to the stratagem list code images list
                 # A random dict/variable in stratagems and grabs the "codeImageList" and adds it to another list which is the playing hand
                 SAC += 1 # adds 1 to the count to indicated another has been added
             else:
                 break
+
+            ############################### FIX THIS SO IT GRABS THE DICT IN THE STRATAGEMS LIST
         
         self.text_surface = font.render("Manual Text", True, (255, 255, 255)) # defines text to be displayed
         pygame.display.set_caption("Duck Stratagem") # Display window name
@@ -105,16 +110,12 @@ class App:
 
     def code_image_display_active(self, completion):
         '''Function that will grab the first code image of the list and display it'''
-        print(self.stratagemList_ci_hand)
-        print()
-        print(self.stratagemList_ci_hand[0])
-        print()
         if completion != 0: # if the completion number is not 0
             completion_index = completion - 1 # minus 1 by the number (so it corrosponds with the index)
             temp_image = (self.stratagemList_ci_hand[0])[completion_index] # create a temp variable of the first code image of the code
             for i in range(4): # for 0-3
                 if self.image_var_dict[self.image_names_var[i]] == temp_image: 
-                # ^ goes through the first 4 keys (i changing) to see if the value is the same inwhich, we know what the code image is
+                # ^ goes through the first 4 k eys (i changing) to see if the value is the same inwhich, we know what the code image is
                     (self.stratagemList_ci_hand[0])[completion_index] = self.image_var_dict[self.image_names_var[i+4]]
                     # ^ changes the code image to a bolder/brigher image
                     # ^ in the players hand, the first code, goes into the first image/value and changes into the dict value of the original image + 4
