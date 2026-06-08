@@ -40,17 +40,29 @@ class App:
         self.stratagem_list_code = []
         self.name_stratagem_text = ""
         self.stratagem_text = ""
+
+        self.code_completion = 0
     def on_init(self):
         pygame.init()
         self.stratagems = (ESR, EA, ECB, ESS, ENA, E110RP, ESB, OPS, OGB, OGS, O120HEB, OAS, OSS, OEMSS, O380HEB, OWB, OL, ONB, ORS) # Stratagem codes
         self.display = pygame.display.set_mode((700, 500), pygame.HWSURFACE | pygame.DOUBLEBUF) # creates pygame window (size)
-        font = pygame.font.Font("font.ttf", 36)
+        font = pygame.font.Font("font.ttf", 36) # font
 
         '''Images'''
-        self.arrow_up = pygame.transform.smoothscale(pygame.image.load("arrow_up.png").convert_alpha(), (50, 50))
-        self.arrow_right = pygame.transform.smoothscale(pygame.image.load("arrow_right.png").convert_alpha(), (50, 50))
-        self.arrow_down = pygame.transform.smoothscale(pygame.image.load("arrow_down.png").convert_alpha(), (50, 50))
-        self.arrow_left = pygame.transform.smoothscale(pygame.image.load("arrow_left.png").convert_alpha(), (50, 50))
+        image = pygame.transform.smoothscale(pygame.image.load("arrow_up.png").convert_alpha(), (50, 50))
+        image.set_alpha(50)
+        self.arrow_up = image
+        image = pygame.transform.smoothscale(pygame.image.load("arrow_right.png").convert_alpha(), (50, 50))
+        image.set_alpha(50)
+        self.arrow_right = image
+        image = pygame.transform.smoothscale(pygame.image.load("arrow_down.png").convert_alpha(), (50, 50))
+        image.set_alpha(50)
+        self.arrow_down = image
+        image = pygame.transform.smoothscale(pygame.image.load("arrow_left.png").convert_alpha(), (50, 50))
+        image.set_alpha(50)
+        self.arrow_left = image
+        # ^ loads the png as a pygame image, then formats/prepares the image, allows the changing of size and cleans it up, sets the size to 50w and 50l,
+        # then assigns it to the variable image, then adjustes the opacity, then assigns the value to the variable
 
         for i in self.stratagems:
             i["codeImageList"] = []
@@ -78,13 +90,16 @@ class App:
         pygame.display.set_caption("Duck Stratagem") # Display window name
         self._running = True # sets var to true when game runs again?
 
-    def code_image_display(self):
+    def code_image_display_active(self, completion):
         '''Function that will grab the first code image of the list and display it'''
+        for i in range(completion):
+            self.stratagem_list_code_image.pop(i)
         for i in range(len(self.stratagem_list_code_image[0])):
             tcinp = 100 + (i*55) # temp code image number position
             self.display.blit((self.stratagem_list_code_image[0])[i], (tcinp, 100)) # displays code image
             self.display.blit((self.stratagem_list_code_image[0])[i], (tcinp+1, 100)) # displays code image - bolder
             self.display.blit((self.stratagem_list_code_image[0])[i], (tcinp, 101)) # displays code image - bolder
+
 
     def on_event(self, event):
         if event.type == pygame.QUIT: # if the game is exitted out of
@@ -101,7 +116,7 @@ class App:
         while(self._running): # constant loop when _running is true
             self.FPS.tick(60) # sets fps to 60
             
-            self.code_image_display() # displays code image function
+            self.code_image_display_active(self.code_completion) # displays code image function
 
             for event in pygame.event.get(): # grabs the events (keyboard triggers etc)
                 self.on_event(event) # checks if the game has 'quitted'?
