@@ -48,7 +48,7 @@ class App:
         self.stratagem_text = ""
 
         self.list_completion = 0
-        self.code_completion = 6
+        self.code_completion = 5
     def on_init(self):
         pygame.init()
         self.stratagems = (ESR, EA, ECB, ESS, ENA, E110RP, ESB, OPS, OGB, OGS, O120HEB, OAS, OSS, OEMSS, O380HEB, OWB, OL, ONB, ORS) # Stratagem codes
@@ -115,7 +115,7 @@ class App:
         '''Function that will grab the first code image of the list and display it'''
         if completion != 0: # if the completion number is not 0
             completion_index = completion - 1 # minus 1 by the number so it corrosponds with the index in the current code
-            if completion_index <= self.stratagemList_hand[0]["length"]: # Checks if the completion index is smaller or equal to the length of the current code
+            if completion_index < self.stratagemList_hand[0]["length"]: # Checks if the completion index is smaller or equal to the length of the current code
             # ^ if the completion index(the index of the correct press key) is smaller or equal to the length of the code
                 temp_image = (self.stratagemList_ci_hand[0])[completion_index] # create a temp variable of the completion index of whatever the list is (what the player is on)
                 for i in range(4): # for 0-3
