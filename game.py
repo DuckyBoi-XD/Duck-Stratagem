@@ -47,7 +47,8 @@ class App:
         self.name_stratagem_text = ""
         self.stratagem_text = ""
 
-        self.code_completion = 4
+        self.list_completion = 0
+        self.code_completion = 6
     def on_init(self):
         pygame.init()
         self.stratagems = (ESR, EA, ECB, ESS, ENA, E110RP, ESB, OPS, OGB, OGS, O120HEB, OAS, OSS, OEMSS, O380HEB, OWB, OL, ONB, ORS) # Stratagem codes
@@ -101,8 +102,6 @@ class App:
                 SAC += 1 # adds 1 to the count to indicated another has been added
             else:
                 break
-
-            ############################### FIX THIS SO IT GRABS THE DICT IN THE STRATAGEMS LIST
         
         self.text_surface = font.render("Manual Text", True, (255, 255, 255)) # defines text to be displayed
         pygame.display.set_caption("Duck Stratagem") # Display window name
@@ -111,14 +110,22 @@ class App:
     def code_image_display_active(self, completion):
         '''Function that will grab the first code image of the list and display it'''
         if completion != 0: # if the completion number is not 0
-            completion_index = completion - 1 # minus 1 by the number (so it corrosponds with the index)
-            temp_image = (self.stratagemList_ci_hand[0])[completion_index] # create a temp variable of the first code image of the code
-            for i in range(4): # for 0-3
-                if self.image_var_dict[self.image_names_var[i]] == temp_image: 
-                # ^ goes through the first 4 k eys (i changing) to see if the value is the same inwhich, we know what the code image is
-                    (self.stratagemList_ci_hand[0])[completion_index] = self.image_var_dict[self.image_names_var[i+4]]
-                    # ^ changes the code image to a bolder/brigher image
-                    # ^ in the players hand, the first code, goes into the first image/value and changes into the dict value of the original image + 4
+            completion_index = completion - 1 # minus 1 by the number so it corrosponds with the index in the current code
+            if completion_index <= self.stratagemList_hand[0]["length"]: # Checks if the completion index is smaller or equal to the length of the current code
+            # ^ if the completion index(the index of the correct press key) is smaller or equal to the length of the code
+                temp_image = (self.stratagemList_ci_hand[0])[completion_index] # create a temp variable of the completion index of whatever the list is (what the player is on)
+                for i in range(4): # for 0-3
+                    if self.image_var_dict[self.image_names_var[i]] == temp_image: 
+                    # ^ goes through the first 4 k eys (i changing) to see if the value is the same inwhich, we know what the code image is
+                        (self.stratagemList_ci_hand[0])[completion_index] = self.image_var_dict[self.image_names_var[i+4]]
+                        # ^ changes the code image to a bolder/brigher image
+                        # ^ goes to whatever the list code the player is on, goes into the image/value they are on and changes into the dict value of the original image + 4
+            else: # if the completion index (the index of the completed code image) is more than length (compels and entire code) it grabs a new code by removing the first 
+                self.code_completion = 0 # resets the progress on the code (because its a new list)
+
+                self.stratagemList_ci_hand.pop(0) # removes the first list item
+                self.stratagemList_hand.pop(0)# removes the first list item
+
 
         for i in range(len(self.stratagemList_ci_hand[0])):
             tcinp = 100 + (i*55) # temp code image number position
