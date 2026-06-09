@@ -5,27 +5,27 @@ import time
 from pygame.locals import *
 
 ## Eagle Stratagems
-ESR = {"name": "Eagle Strafing Run", "codeName": "ESR", "code": "122", "length": 3}
-EA = {"name": "Eagle Airstrike", "codeName": "EA", "code": "1232", "length": 4}
-ECB = { "name": "Eagle Cluster Bomb", "codeName": "ECB", "code": "12332", "length": 5}
-ESS = {"name": "Eagle Smoke Strike", "codeName": "ESS", "code": "1213", "length": 4}
-ENA = {"name": "Eagle Napalm Airstrike", "codeName": "ENA", "code": "1231", "length": 4}
-E110RP = {"name": "Eagle 110mm Rocket Pods", "codeName": "E110RP", "code": "1214", "length": 4}
-ESB = {"name": "Eagle 500kg Bomb", "codeName": "ESB", "code": "12333", "length": 5}
+ESR = {"name": "Eagle Strafing Run", "codeName": "ESR", "code": "122"}
+EA = {"name": "Eagle Airstrike", "codeName": "EA", "code": "1232"}
+ECB = { "name": "Eagle Cluster Bomb", "codeName": "ECB", "code": "12332"}
+ESS = {"name": "Eagle Smoke Strike", "codeName": "ESS", "code": "1213"}
+ENA = {"name": "Eagle Napalm Airstrike", "codeName": "ENA", "code": "1231"}
+E110RP = {"name": "Eagle 110mm Rocket Pods", "codeName": "E110RP", "code": "1214"}
+ESB = {"name": "Eagle 500kg Bomb", "codeName": "ESB", "code": "12333"}
 
 ## Orbital Strikes
-OPS = {"name": "Orbital Precision Strike", "codeName": "OPS", "code": "221", "length": 3}
-OGB = {"name": "Orbital Gatling Barrage", "codeName": "OGB", "code": "23411", "length": 5}
-OGS = {"name": "Orbital Gas Strike", "codeName": "OGS", "code": "12333", "length": 5}
-O120HEB = {"name": "Orbital 120mm HE Barrage", "codeName": "O120HEB", "code": "223423", "length": 6}
-OAS = {"name": "Orbital Airburst Strike", "codeName": "OAS", "code": "222", "length": 3}
-OSS = {"name": "Orbital Smoke Strike", "codeName": "OSS", "code": "2231", "length": 4}
-OEMSS = {"name": "Orbital EMS Strike", "codeName": "OEMSS", "code": "2243", "length": 4}
-O380HEB = {"name": "Orbital 380mm HE Barrage", "codeName": "O380HEB", "code": "2311433", "length": 7}
-OWB = {"name": "Orbital Walking Barrage", "codeName": "OWB", "code": "232323", "length": 6}
-OL = {"name": "Orbital Laser", "codeName": "OL", "code": "23123", "length": 5}
-ONB = {"name": "Orbital Napalm Barrage", "codeName": "ONB", "code": "223421", "length": 6}
-ORS = {"name": "Orbital Railcannon Strike", "codeName": "ORS", "code": "21332", "length": 5}
+OPS = {"name": "Orbital Precision Strike", "codeName": "OPS", "code": "221"}
+OGB = {"name": "Orbital Gatling Barrage", "codeName": "OGB", "code": "23411"}
+OGS = {"name": "Orbital Gas Strike", "codeName": "OGS", "code": "12333"}
+O120HEB = {"name": "Orbital 120mm HE Barrage", "codeName": "O120HEB", "code": "223423"}
+OAS = {"name": "Orbital Airburst Strike", "codeName": "OAS", "code": "222"}
+OSS = {"name": "Orbital Smoke Strike", "codeName": "OSS", "code": "2231"}
+OEMSS = {"name": "Orbital EMS Strike", "codeName": "OEMSS", "code": "2243"}
+O380HEB = {"name": "Orbital 380mm HE Barrage", "codeName": "O380HEB", "code": "2311433"}
+OWB = {"name": "Orbital Walking Barrage", "codeName": "OWB", "code": "232323"}
+OL = {"name": "Orbital Laser", "codeName": "OL", "code": "23123"}
+ONB = {"name": "Orbital Napalm Barrage", "codeName": "ONB", "code": "223421"}
+ORS = {"name": "Orbital Railcannon Strike", "codeName": "ORS", "code": "21332"}
 
 display_bg = pygame.Color(0, 0, 0) # background colour for pygame display
 class App:
@@ -56,7 +56,7 @@ class App:
         font = pygame.font.Font("font.ttf", 36) # font
 
         '''Images'''
-        for i in range(len(self.image_names_var)): # find length of the list so for each index
+        for i in range(len(self.image_names_var)): # find length of the list for each index
             if i <= 3: # if the index < 4
                 image = pygame.transform.smoothscale(pygame.image.load(self.image_names[i]).convert_alpha(), (50, 50))
                 # ^ creates an image by grabbing the image name with the same index in inmage_name (which should be the same direction)
@@ -71,6 +71,10 @@ class App:
                 image.set_alpha(255) # makes the image fully opaque
                 self.image_var_dict[self.image_names_var[i]] = image
                 # ^ adds a dict to the dict(image_var_dict) which key is the i from before
+
+        '''Length of code for each stratagem'''
+        for i in self.stratagems:
+            i["length"] = len(i["code"])
 
         '''Creating list of images for each dictonary in the stratagem list'''
         # code that goes through the codes of the stratagem and creates a list of images which is corrolates to the code 
