@@ -32,6 +32,7 @@ class App:
     def __init__(self):
         self.image_names = ("arrow_up.png", "arrow_right.png", "arrow_down.png", "arrow_left.png") # list of the names of the file
         self.image_names_var = ("arrow_up", "arrow_right", "arrow_down", "arrow_left", "Barrow_up", "Barrow_right", "Barrow_down", "Barrow_left") # the variable name options
+        self.keypress_list = (pygame.K_w, pygame.K_d, pygame.K_s, pygame.K_a, pygame.K_UP, pygame.K_RIGHT, pygame.K_DOWN, pygame.K_LEFT)
         self.image_var_dict = {}
 
         self._running = True # sets var to true when game runs
@@ -48,7 +49,7 @@ class App:
         self.stratagem_text = ""
 
         self.list_completion = 0
-        self.code_completion = 5
+        self.code_completion = -1
     def on_init(self):
         pygame.init()
         self.stratagems = (ESR, EA, ECB, ESS, ENA, E110RP, ESB, OPS, OGB, OGS, O120HEB, OAS, OSS, OEMSS, O380HEB, OWB, OL, ONB, ORS) # Stratagem codes
@@ -113,24 +114,27 @@ class App:
 
     def code_image_display_active(self, completion):
         '''Function that will grab the first code image of the list and display it'''
-        if completion != 0: # if the completion number is not 0
-            completion_index = completion - 1 # minus 1 by the number so it corrosponds with the index in the current code
-            if completion_index < self.stratagemList_hand[0]["length"]: # Checks if the completion index is smaller or equal to the length of the current code
+
+        '''This code will check if the user has made process of the code and will make the correct ones brighter'''
+        if completion != -1: # if the completion number is not 0
+            if completion < self.stratagemList_hand[0]["length"]: # Checks if the completion index is smaller or equal to the length of the current code
             # ^ if the completion index(the index of the correct press key) is smaller or equal to the length of the code
-                temp_image = (self.stratagemList_ci_hand[0])[completion_index] # create a temp variable of the completion index of whatever the list is (what the player is on)
+                temp_image = (self.stratagemList_ci_hand[0])[completion] # create a temp variable of the completion index of whatever the list is (what the player is on)
                 for i in range(4): # for 0-3
                     if self.image_var_dict[self.image_names_var[i]] == temp_image: 
                     # ^ goes through the first 4 k eys (i changing) to see if the value is the same inwhich, we know what the code image is
-                        (self.stratagemList_ci_hand[0])[completion_index] = self.image_var_dict[self.image_names_var[i+4]]
+                        (self.stratagemList_ci_hand[0])[completion] = self.image_var_dict[self.image_names_var[i+4]]
                         # ^ changes the code image to a bolder/brigher image
                         # ^ goes to whatever the list code the player is on, goes into the image/value they are on and changes into the dict value of the original image + 4
-            else: # if the completion index (the index of the completed code image) is more than length (compels and entire code) it grabs a new code by removing the first 
-                self.code_completion = 0 # resets the progress on the code (because its a new list)
+                        if completion+1 == self.stratagemList_hand[0]["length"]:
+                        # ^ if the completion index (the index of the completed code image) is more than length (compels and entire code) it grabs a new code by removing the first 
+                            self.code_completion = -1 # resets the progress on the code (because its a new list)
 
-                self.stratagemList_ci_hand.pop(0) # removes the first list item
-                self.stratagemList_hand.pop(0)# removes the first list item
+                            self.stratagemList_ci_hand.pop(0) # removes the first list item
+                            self.stratagemList_hand.pop(0)# removes the first list item
+                
 
-
+        '''displays the image (the code)'''
         for i in range(len(self.stratagemList_ci_hand[0])):
             tcinp = 100 + (i*55) # temp code image number position
             self.display.blit((self.stratagemList_ci_hand[0])[i], (tcinp, 100)) # displays code image
@@ -152,12 +156,55 @@ class App:
             self._running = False 
         while(self._running): # constant loop when _running is true
             self.FPS.tick(60) # sets fps to 60
-            
-            self.code_image_display_active(self.code_completion) # displays code image function
 
+            self.code_image_display_active(self.code_completion) # displays code image function
+            
             for event in pygame.event.get(): # grabs the events (keyboard triggers etc)
                 self.on_event(event) # checks if the game has 'quitted'?
                 pygame.display.flip() # updates display
+                if event.type == pygame.KEYDOWN:
+                    for i in self.keypress_list:
+                        check_code_index = self.code_completion + 1
+                        if event.key == i: # simplify this in the future (or when I'm bothered)
+                            print(event.key)
+                            print(i)
+                            print(self.keypress_list[0])
+                            print(self.keypress_list[4])
+                            print(((self.stratagemList_hand[0])["code"])[check_code_index])
+                            print()
+                            if i == self.keypress_list[0] or i == self.keypress_list[4]:
+                                print(1)
+                                if "1" == ((self.stratagemList_hand[0])["code"])[check_code_index]:
+                                    self.code_completion += 1
+                                    print("w")
+                                else:
+                                    pass
+                            elif i == self.keypress_list[1] or i == self.keypress_list[5]:
+                                print(2)
+                                if "2" == ((self.stratagemList_hand[0])["code"])[check_code_index]:
+                                    self.code_completion += 1
+                                    print("a")
+                                else:
+                                    pass
+                            elif i == self.keypress_list[2] or i == self.keypress_list[6]:
+                                print(3)
+                                if "3" == ((self.stratagemList_hand[0])["code"])[check_code_index]:
+                                    self.code_completion += 1 
+                                    print("s")
+                                else:
+                                    pass
+                            elif i == self.keypress_list[3] or i == self.keypress_list[7]:
+                                print(4)
+                                if "4" == ((self.stratagemList_hand[0])["code"])[check_code_index]:
+                                    self.code_completion += 1
+                                    print("d")
+                                else:
+                                    pass
+            
+            
+
+            
+
             self.on_loop()
             self.on_render()
 
