@@ -126,12 +126,6 @@ class App:
                         (self.stratagemList_ci_hand[0])[completion] = self.image_var_dict[self.image_names_var[i+4]]
                         # ^ changes the code image to a bolder/brigher image
                         # ^ goes to whatever the list code the player is on, goes into the image/value they are on and changes into the dict value of the original image + 4
-                        if completion+1 == self.stratagemList_hand[0]["length"]:
-                        # ^ if the completion index (the index of the completed code image) is more than length (compels and entire code) it grabs a new code by removing the first 
-                            self.code_completion = -1 # resets the progress on the code (because its a new list)
-
-                            self.stratagemList_ci_hand.pop(0) # removes the first list item
-                            self.stratagemList_hand.pop(0)# removes the first list item
                 
 
         '''displays the image (the code)'''
@@ -148,66 +142,39 @@ class App:
     def on_loop(self):
         pass
     def on_render(self):
-        self.display.fill((display_bg)) # sets displays colour
+        pass
     def on_cleanup(self):
         pygame.quit() # cleanly quits the game when game is quitted
     def on_execute(self):
         if self.on_init() == False: # error handler???
             self._running = False 
-        while(self._running): # constant loop when _running is true
+        while(self._running): # constant loop when _running
             self.FPS.tick(60) # sets fps to 60
-
-            self.code_image_display_active(self.code_completion) # displays code image function
             
+            self.code_image_display_active(self.code_completion) # displays code image function
+
             for event in pygame.event.get(): # grabs the events (keyboard triggers etc)
                 self.on_event(event) # checks if the game has 'quitted'?
-                pygame.display.flip() # updates display
-                if event.type == pygame.KEYDOWN:
-                    for i in self.keypress_list:
-                        check_code_index = self.code_completion + 1
-                        if event.key == i: # simplify this in the future (or when I'm bothered)
-                            print(event.key)
-                            print(i)
-                            print(self.keypress_list[0])
-                            print(self.keypress_list[4])
-                            print(((self.stratagemList_hand[0])["code"])[check_code_index])
-                            print()
-                            if i == self.keypress_list[0] or i == self.keypress_list[4]:
-                                print(1)
-                                if "1" == ((self.stratagemList_hand[0])["code"])[check_code_index]:
-                                    self.code_completion += 1
-                                    print("w")
-                                else:
-                                    pass
-                            elif i == self.keypress_list[1] or i == self.keypress_list[5]:
-                                print(2)
-                                if "2" == ((self.stratagemList_hand[0])["code"])[check_code_index]:
-                                    self.code_completion += 1
-                                    print("a")
-                                else:
-                                    pass
-                            elif i == self.keypress_list[2] or i == self.keypress_list[6]:
-                                print(3)
-                                if "3" == ((self.stratagemList_hand[0])["code"])[check_code_index]:
-                                    self.code_completion += 1 
-                                    print("s")
-                                else:
-                                    pass
-                            elif i == self.keypress_list[3] or i == self.keypress_list[7]:
-                                print(4)
-                                if "4" == ((self.stratagemList_hand[0])["code"])[check_code_index]:
-                                    self.code_completion += 1
-                                    print("d")
-                                else:
-                                    pass
-            
-            
-
-            
-
+                if event.type == pygame.KEYDOWN: # if the event is a key press
+                    for i in self.keypress_list: # for every value in the keypress list (key presses like wasd and arrow keys)
+                        check_code_index = self.code_completion + 1 # creates variable of check code index
+                        if event.key == i: # if the event key is one of the values in keypress (doesn't active if its a random key)
+                            for a in range(4): # goes through each value from 0-3
+                                if i == self.keypress_list[a] or i == self.keypress_list[a+4]:
+                                # ^ if the user pressed key is equal to 2 values in keypress list
+                                    if f"{a+1}" == ((self.stratagemList_hand[0])["code"])[check_code_index]:
+                                    # ^ if a + 1 (range index that is equal to the keypress +1 to be aligned with the code) equals  the first digit in the code (the first code) 
+                                        self.code_completion += 1 # adds one to code completion counter
+                                        if self.code_completion +1 == self.stratagemList_hand[0]["length"]:
+                                        # ^ if the completion index (the index of the completed code image) is more than length (compels and entire code) it grabs a new code by removing the first 
+                                            self.code_completion = -1 # resets the progress on the code (because its a new list)
+                                            self.stratagemList_ci_hand.pop(0) # removes the first list item
+                                            self.stratagemList_hand.pop(0)# removes the first list item
+                                            break                                        
             self.on_loop()
             self.on_render()
-
+            pygame.display.flip() # updates display
+            self.display.fill((display_bg)) # sets displays colour
 if __name__ == "__main__":
     theApp = App()
     theApp.on_execute()
