@@ -30,8 +30,12 @@ ORS = {"name": "Orbital Railcannon Strike", "codeName": "ORS", "code": "21332"}
 display_bg = pygame.Color(0, 0, 0) # background colour for pygame display
 class App:
     def __init__(self):
-        self.image_names = ("arrow_up.png", "arrow_right.png", "arrow_down.png", "arrow_left.png") # list of the names of the file
+        self.image_names = ("assets/arrows/arrow_up.png", "assets/arrows/arrow_right.png", "assets/arrows/arrow_down.png", "assets/arrows/arrow_left.png") # list of the names of the file
         self.image_names_var = ("arrow_up", "arrow_right", "arrow_down", "arrow_left", "Barrow_up", "Barrow_right", "Barrow_down", "Barrow_left") # the variable name options
+        self.image_image = ("assets/stratagempng/ESR.png", "assets/stratagempng/EA.png", "assets/stratagempng/ECB.png", "assets/stratagempng/ESS.png", "assets/stratagempng/ENA.png", 
+                            "assets/stratagempng/E110RP.png", "assets/stratagempng/ESB.png", "assets/stratagempng/OPS.png", "assets/stratagempng/OGB.png", "assets/stratagempng/OGS.png", 
+                            "assets/stratagempng/O120HEB.png", "assets/stratagempng/OAS.png", "assets/stratagempng/OSS.png", "assets/stratagempng/OEMSS.png", "assets/stratagempng/O380HEB.png", 
+                            "assets/stratagempng/OWB.png", "assets/stratagempng/OL.png", "assets/stratagempng/ONB.png", "assets/stratagempng/ORS.png") # list of the names of the file for the stratagem images
         self.keypress_list = (pygame.K_w, pygame.K_d, pygame.K_s, pygame.K_a, pygame.K_UP, pygame.K_RIGHT, pygame.K_DOWN, pygame.K_LEFT)
         self.image_var_dict = {}
 
@@ -122,7 +126,6 @@ class App:
 
         '''This code will check if the user has made process of the code and will make the correct ones brighter'''
         if completion == -1 and self.code_reset is True:
-            print(completion)
             self.code_reset = False
             self.stratagemList_ci_hand[0] = self.stratagemList_hand_reset.copy()
         elif completion != -1: # if the completion number is not 0
