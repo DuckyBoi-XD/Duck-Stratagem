@@ -32,7 +32,7 @@ class App:
     def __init__(self):
         self.image_names = ("assets/arrows/arrow_up.png", "assets/arrows/arrow_right.png", "assets/arrows/arrow_down.png", "assets/arrows/arrow_left.png") # list of the names of the file
         self.image_names_var = ("arrow_up", "arrow_right", "arrow_down", "arrow_left", "Barrow_up", "Barrow_right", "Barrow_down", "Barrow_left") # the variable name options
-        self.image_image = ("assets/stratagempng/ESR.png", "assets/stratagempng/EA.png", "assets/stratagempng/ECB.png", "assets/stratagempng/ESS.png", "assets/stratagempng/ENA.png", 
+        self.stratagem_image = ("assets/stratagempng/ESR.png", "assets/stratagempng/EA.png", "assets/stratagempng/ECB.png", "assets/stratagempng/ESS.png", "assets/stratagempng/ENA.png", 
                             "assets/stratagempng/E110RP.png", "assets/stratagempng/ESB.png", "assets/stratagempng/OPS.png", "assets/stratagempng/OGB.png", "assets/stratagempng/OGS.png", 
                             "assets/stratagempng/O120HEB.png", "assets/stratagempng/OAS.png", "assets/stratagempng/OSS.png", "assets/stratagempng/OEMSS.png", "assets/stratagempng/O380HEB.png", 
                             "assets/stratagempng/OWB.png", "assets/stratagempng/OL.png", "assets/stratagempng/ONB.png", "assets/stratagempng/ORS.png") # list of the names of the file for the stratagem images
@@ -46,16 +46,16 @@ class App:
         self.stratagemList_ci_hand = [] # list of stratagems code for the user to complete
         self.stratagemList_hand = []
         self.stratagemList_hand_reset = []
+        self.stratagemList_hand_images = []
         self.mode = None # how hard/many stratagems
         self.mode_options = ("Trivial", "Hard", "Super Helldive") # the different difficulties
-        self.mode_amount = 5 # temp mode ammount
+        self.mode_amount = 7 # temp mode ammount
         self.stratagem_list_code = []
         self.name_stratagem_text = ""
         self.stratagem_text = ""
 
         self.list_completion = 0
         self.code_completion = -1
-        self.code_reset = False
         self.completion_tracker = False
     def on_init(self):
         pygame.init()
@@ -79,6 +79,14 @@ class App:
                 image.set_alpha(255) # makes the image fully opaque
                 self.image_var_dict[self.image_names_var[i]] = image
                 # ^ adds a dict to the dict(image_var_dict) which key is the i from before
+        
+        # assigns each stratagem with the correct image of the stratagem
+        a = 0
+        for i in self.stratagems:
+            image = pygame.transform.smoothscale(pygame.image.load(self.stratagem_image[a]).convert_alpha(), (100, 100))
+            image.set_alpha(100)
+            i["image"] = image
+            a += 1
 
         '''Length of code for each stratagem'''
         for i in self.stratagems:
@@ -109,12 +117,12 @@ class App:
                 temp_stratagem = random.choice(self.stratagems)
                 self.stratagemList_hand.append(temp_stratagem)
                 self.stratagemList_ci_hand.append(temp_stratagem["codeImageList"])
+                self.stratagemList_hand_images.append(temp_stratagem["image"])
                 # ^ grabs a random stratagem image code list and adds it to the stratagem list code images list
                 # A random dict/variable in stratagems and grabs the "codeImageList" and adds it to another list which is the playing hand
                 SAC += 1 # adds 1 to the count to indicated another has been added
             else:
-                self.stratagemList_hand_reset = self.stratagemList_ci_hand[0].copy()
-                # ^ sets the reset hand as the hand at the start
+                self.stratagemList_hand_reset = self.stratagemList_ci_hand[0].copy() # sets the reset hand as the hand at the start
                 break
         
         self.text_surface = font.render("Manual Text", True, (255, 255, 255)) # defines text to be displayed
@@ -125,8 +133,7 @@ class App:
         '''Function that will grab the first code image of the list and display it'''
 
         '''This code will check if the user has made process of the code and will make the correct ones brighter'''
-        if completion == -1 and self.code_reset is True:
-            self.code_reset = False
+        if completion == -1:
             self.stratagemList_ci_hand[0] = self.stratagemList_hand_reset.copy()
         elif completion != -1: # if the completion number is not 0
             if completion < self.stratagemList_hand[0]["length"] and self.completion_tracker == False: # Checks if the completion index is smaller or equal to the length of the current code
@@ -146,6 +153,9 @@ class App:
             self.display.blit((self.stratagemList_ci_hand[0])[i], (tcinp, 100)) # displays code image
             self.display.blit((self.stratagemList_ci_hand[0])[i], (tcinp+1, 100)) # displays code image - bolder
             self.display.blit((self.stratagemList_ci_hand[0])[i], (tcinp, 101)) # displays code image - bolder
+        for i in range(len(self.stratagemList_hand_images)):
+            tcinp = (i*100)
+            self.display.blit((self.stratagemList_hand_images[i]), (tcinp, 0))
 
 
     def on_event(self, event):
@@ -188,8 +198,6 @@ class App:
                                             break
                                     else: # if the input is not the correct one 
                                         self.code_completion = -1 # resets progress
-                                        self.code_reset = True # sets variable to know if the progress has been reset
-
             self.on_loop()
             self.on_render()
             pygame.display.flip() # updates display
