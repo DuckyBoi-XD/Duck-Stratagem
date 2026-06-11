@@ -41,6 +41,7 @@ class App:
 
         self.stratagemList_ci_hand = [] # list of stratagems code for the user to complete
         self.stratagemList_hand = []
+        self.stratagemList_hand_reset = []
         self.mode = None # how hard/many stratagems
         self.mode_options = ("Trivial", "Hard", "Super Helldive") # the different difficulties
         self.mode_amount = 5 # temp mode ammount
@@ -50,6 +51,8 @@ class App:
 
         self.list_completion = 0
         self.code_completion = -1
+        self.code_reset = False
+        self.completion_tracker = False
     def on_init(self):
         pygame.init()
         self.stratagems = (ESR, EA, ECB, ESS, ENA, E110RP, ESB, OPS, OGB, OGS, O120HEB, OAS, OSS, OEMSS, O380HEB, OWB, OL, ONB, ORS) # Stratagem codes
@@ -101,11 +104,12 @@ class App:
             if SAC < self.mode_amount: # checks if it has created enough codes
                 temp_stratagem = random.choice(self.stratagems)
                 self.stratagemList_hand.append(temp_stratagem)
-                self.stratagemList_ci_hand.append(temp_stratagem["codeImageList"]) 
+                self.stratagemList_ci_hand.append(temp_stratagem["codeImageList"])
                 # ^ grabs a random stratagem image code list and adds it to the stratagem list code images list
                 # A random dict/variable in stratagems and grabs the "codeImageList" and adds it to another list which is the playing hand
                 SAC += 1 # adds 1 to the count to indicated another has been added
             else:
+                self.stratagemList_hand_reset = self.stratagemList_ci_hand[0].copy()
                 break
         
         self.text_surface = font.render("Manual Text", True, (255, 255, 255)) # defines text to be displayed
@@ -116,17 +120,23 @@ class App:
         '''Function that will grab the first code image of the list and display it'''
 
         '''This code will check if the user has made process of the code and will make the correct ones brighter'''
-        if completion != -1: # if the completion number is not 0
-            if completion < self.stratagemList_hand[0]["length"]: # Checks if the completion index is smaller or equal to the length of the current code
+        if completion == -1 and self.code_reset is True:
+            print("reset")
+            print(completion)
+            self.code_reset = False
+            self.stratagemList_ci_hand[0] = self.stratagemList_hand_reset.copy()
+        elif completion != -1: # if the completion number is not 0
+            if completion < self.stratagemList_hand[0]["length"] and self.completion_tracker == False: # Checks if the completion index is smaller or equal to the length of the current code
             # ^ if the completion index(the index of the correct press key) is smaller or equal to the length of the code
                 temp_image = (self.stratagemList_ci_hand[0])[completion] # create a temp variable of the completion index of whatever the list is (what the player is on)
                 for i in range(4): # for 0-3
                     if self.image_var_dict[self.image_names_var[i]] == temp_image: 
-                    # ^ goes through the first 4 k eys (i changing) to see if the value is the same inwhich, we know what the code image is
+                    # ^ goes through the first 4 keys (i changing) to see if the value is the same in which, we know what the code image is
                         (self.stratagemList_ci_hand[0])[completion] = self.image_var_dict[self.image_names_var[i+4]]
                         # ^ changes the code image to a bolder/brigher image
                         # ^ goes to whatever the list code the player is on, goes into the image/value they are on and changes into the dict value of the original image + 4
-                
+                        self.completion_tracker = True
+                        print("change")
 
         '''displays the image (the code)'''
         for i in range(len(self.stratagemList_ci_hand[0])):
@@ -152,7 +162,8 @@ class App:
             self.FPS.tick(60) # sets fps to 60
             
             self.code_image_display_active(self.code_completion) # displays code image function
-
+            
+            '''Tracks the user's keyboard input and checks if it is correct'''
             for event in pygame.event.get(): # grabs the events (keyboard triggers etc)
                 self.on_event(event) # checks if the game has 'quitted'?
                 if event.type == pygame.KEYDOWN: # if the event is a key press
@@ -165,12 +176,20 @@ class App:
                                     if f"{a+1}" == ((self.stratagemList_hand[0])["code"])[check_code_index]:
                                     # ^ if a + 1 (range index that is equal to the keypress +1 to be aligned with the code) equals  the first digit in the code (the first code) 
                                         self.code_completion += 1 # adds one to code completion counter
+                                        self.completion_tracker = False
                                         if self.code_completion +1 == self.stratagemList_hand[0]["length"]:
                                         # ^ if the completion index (the index of the completed code image) is more than length (compels and entire code) it grabs a new code by removing the first 
                                             self.code_completion = -1 # resets the progress on the code (because its a new list)
                                             self.stratagemList_ci_hand.pop(0) # removes the first list item
                                             self.stratagemList_hand.pop(0)# removes the first list item
-                                            break                                        
+                                            self.stratagemList_hand_reset = self.stratagemList_ci_hand[0].copy()
+                                            print("New LIST")
+                                            break
+                                    else:
+                                        print("WRONG")
+                                        self.code_completion = -1
+                                        self.code_reset = True
+
             self.on_loop()
             self.on_render()
             pygame.display.flip() # updates display
