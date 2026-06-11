@@ -110,6 +110,7 @@ class App:
                 SAC += 1 # adds 1 to the count to indicated another has been added
             else:
                 self.stratagemList_hand_reset = self.stratagemList_ci_hand[0].copy()
+                # ^ sets the reset hand as the hand at the start
                 break
         
         self.text_surface = font.render("Manual Text", True, (255, 255, 255)) # defines text to be displayed
@@ -121,7 +122,6 @@ class App:
 
         '''This code will check if the user has made process of the code and will make the correct ones brighter'''
         if completion == -1 and self.code_reset is True:
-            print("reset")
             print(completion)
             self.code_reset = False
             self.stratagemList_ci_hand[0] = self.stratagemList_hand_reset.copy()
@@ -136,7 +136,6 @@ class App:
                         # ^ changes the code image to a bolder/brigher image
                         # ^ goes to whatever the list code the player is on, goes into the image/value they are on and changes into the dict value of the original image + 4
                         self.completion_tracker = True
-                        print("change")
 
         '''displays the image (the code)'''
         for i in range(len(self.stratagemList_ci_hand[0])):
@@ -182,13 +181,11 @@ class App:
                                             self.code_completion = -1 # resets the progress on the code (because its a new list)
                                             self.stratagemList_ci_hand.pop(0) # removes the first list item
                                             self.stratagemList_hand.pop(0)# removes the first list item
-                                            self.stratagemList_hand_reset = self.stratagemList_ci_hand[0].copy()
-                                            print("New LIST")
+                                            self.stratagemList_hand_reset = self.stratagemList_ci_hand[0].copy() # sets the reset hand to the new code
                                             break
-                                    else:
-                                        print("WRONG")
-                                        self.code_completion = -1
-                                        self.code_reset = True
+                                    else: # if the input is not the correct one 
+                                        self.code_completion = -1 # resets progress
+                                        self.code_reset = True # sets variable to know if the progress has been reset
 
             self.on_loop()
             self.on_render()
