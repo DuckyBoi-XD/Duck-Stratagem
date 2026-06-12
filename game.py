@@ -57,11 +57,14 @@ class App:
         self.list_completion = 0
         self.code_completion = -1
         self.completion_tracker = False
+
+        self.displayWidth = 800
+        self.displayHeight = 500
     def on_init(self):
         pygame.init()
         self.stratagems = (ESR, EA, ECB, ESS, ENA, E110RP, ESB, OPS, OGB, OGS, O120HEB, OAS, OSS, OEMSS, O380HEB, OWB, OL, ONB, ORS) # Stratagem codes
-        self.display = pygame.display.set_mode((700, 500), pygame.HWSURFACE | pygame.DOUBLEBUF) # creates pygame window (size)
-        font = pygame.font.Font("font.ttf", 36) # font
+        self.display = pygame.display.set_mode((self.displayWidth, self.displayHeight), pygame.HWSURFACE | pygame.DOUBLEBUF) # creates pygame window (size)
+        self.font = pygame.font.Font("font.ttf", 36) # font
 
         '''Images'''
         for i in range(len(self.image_names_var)): # find length of the list for each index
@@ -83,7 +86,7 @@ class App:
         # assigns each stratagem with the correct image of the stratagem
         a = 0
         for i in self.stratagems:
-            image = pygame.transform.smoothscale(pygame.image.load(self.stratagem_image[a]).convert_alpha(), (100, 100))
+            image = pygame.transform.smoothscale(pygame.image.load(self.stratagem_image[a]).convert_alpha(), (75, 75))
             image.set_alpha(100)
             i["image"] = image
             a += 1
@@ -125,7 +128,6 @@ class App:
                 self.stratagemList_hand_reset = self.stratagemList_ci_hand[0].copy() # sets the reset hand as the hand at the start
                 break
         
-        self.text_surface = font.render("Manual Text", True, (255, 255, 255)) # defines text to be displayed
         pygame.display.set_caption("Duck Stratagem") # Display window name
         self._running = True # sets var to true when game runs again?
 
@@ -147,15 +149,37 @@ class App:
                         # ^ goes to whatever the list code the player is on, goes into the image/value they are on and changes into the dict value of the original image + 4
                         self.completion_tracker = True
 
+        image = self.stratagemList_hand_images[0].copy()
+        image.set_alpha(255)
+        image = pygame.transform.smoothscale(image, (100, 100))
+        self.stratagemList_hand_images[0] = image
+
         '''displays the image (the code)'''
+
+        arrow_image_number = len(self.stratagemList_ci_hand[0])# grabs the length of he code
+        stratagem_list_size = arrow_image_number * 50 + (arrow_image_number - 1) * 5 # how big an image is and the space between
+        spaceside = (self.displayWidth - stratagem_list_size)/2 # takes away the size of the images with spaces and divides by 2 to get the side length
+
+        # displays the code images
         for i in range(len(self.stratagemList_ci_hand[0])):
-            tcinp = 100 + (i*55) # temp code image number position
-            self.display.blit((self.stratagemList_ci_hand[0])[i], (tcinp, 100)) # displays code image
-            self.display.blit((self.stratagemList_ci_hand[0])[i], (tcinp+1, 100)) # displays code image - bolder
-            self.display.blit((self.stratagemList_ci_hand[0])[i], (tcinp, 101)) # displays code image - bolder
-        for i in range(len(self.stratagemList_hand_images)):
-            tcinp = (i*100)
-            self.display.blit((self.stratagemList_hand_images[i]), (tcinp, 0))
+            tcinp = spaceside+ (i*55) # temp code image number position
+            self.display.blit((self.stratagemList_ci_hand[0])[i], (tcinp, 300)) # displays code image
+            self.display.blit((self.stratagemList_ci_hand[0])[i], (tcinp+1, 300)) # displays code image - bolder
+            self.display.blit((self.stratagemList_ci_hand[0])[i], (tcinp, 301)) # displays code image - bolder
+            
+        # displays the image of the stratagem
+        for i in range(len(self.stratagemList_hand_images[0:5])): # the rangle length of the hand images
+            a = i + 1
+            if i == 0: # if the value is the second one in the list
+                tcinp = (a*(self.displayWidth-500)/2)
+                self.display.blit((self.stratagemList_hand_images[i]), (tcinp, 75)) # prints images
+            else:
+                tcinp = (a*(self.displayWidth-600)/2) + 75
+                self.display.blit((self.stratagemList_hand_images[i]), (tcinp, 100)) # prints images
+
+        '''Displays text'''
+        text = self.font.render((self.stratagemList_hand[0])["name"], True, (255, 255, 255))
+        self.display.blit(text, ((self.displayWidth-500)/2, 200))
 
 
     def on_event(self, event):
@@ -194,6 +218,7 @@ class App:
                                             self.code_completion = -1 # resets the progress on the code (because its a new list)
                                             self.stratagemList_ci_hand.pop(0) # removes the first list item
                                             self.stratagemList_hand.pop(0)# removes the first list item
+                                            self.stratagemList_hand_images.pop(0)
                                             self.stratagemList_hand_reset = self.stratagemList_ci_hand[0].copy() # sets the reset hand to the new code
                                             break
                                     else: # if the input is not the correct one 
