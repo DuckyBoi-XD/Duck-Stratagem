@@ -60,6 +60,9 @@ class App:
 
         self.displayWidth = 800
         self.displayHeight = 500
+        self.stratagem_text_width = None
+        self.stratagem_text_height = None
+        self.stratagem_text_y = 200
     def on_init(self):
         pygame.init()
         self.stratagems = (ESR, EA, ECB, ESS, ENA, E110RP, ESB, OPS, OGB, OGS, O120HEB, OAS, OSS, OEMSS, O380HEB, OWB, OL, ONB, ORS) # Stratagem codes
@@ -177,9 +180,15 @@ class App:
                 tcinp = (a*(self.displayWidth-600)/2) + 75
                 self.display.blit((self.stratagemList_hand_images[i]), (tcinp, 100)) # prints images
 
-        '''Displays text'''
-        text = self.font.render((self.stratagemList_hand[0])["name"], True, (255, 255, 255))
-        self.display.blit(text, ((self.displayWidth-500)/2, 200))
+        '''Displays text & colour accents'''
+        self.stratagem_text_width, self.stratagem_text_height = self.font.size((self.stratagemList_hand[0])["name"]) # grabs the measurements of the text
+        text_spaceside = (self.displayWidth - self.stratagem_text_width)/2 # calculates the side of the screen from the start of the text to centre it
+        text_space_x = self.stratagem_text_y - ((50 - self.stratagem_text_height)/2)
+
+        pygame.draw.rect(self.display, (255, 255, 0), (50, text_space_x, (self.displayWidth - 100), 50), width=0, border_radius=3)
+
+        text = self.font.render((self.stratagemList_hand[0])["name"], True, (0, 0, 0)) # creates the text data
+        self.display.blit(text, (text_spaceside, self.stratagem_text_y)) # displays it
 
 
     def on_event(self, event):
