@@ -11,7 +11,7 @@ ECB = { "name": "Eagle Cluster Bomb", "codeName": "ECB", "code": "12332"}
 ESS = {"name": "Eagle Smoke Strike", "codeName": "ESS", "code": "1213"}
 ENA = {"name": "Eagle Napalm Airstrike", "codeName": "ENA", "code": "1231"}
 E110RP = {"name": "Eagle 110mm Rocket Pods", "codeName": "E110RP", "code": "1214"}
-ESB = {"name": "Eagle 500kg Bomb", "codeName": "ESB", "code": "12333"}
+E500B = {"name": "Eagle 500kg Bomb", "codeName": "E500B", "code": "12333"}
 
 ## Orbital Strikes
 OPS = {"name": "Orbital Precision Strike", "codeName": "OPS", "code": "221"}
@@ -33,7 +33,7 @@ class App:
         self.image_names = ("assets/arrows/arrow_up.png", "assets/arrows/arrow_right.png", "assets/arrows/arrow_down.png", "assets/arrows/arrow_left.png") # list of the names of the file
         self.image_names_var = ("arrow_up", "arrow_right", "arrow_down", "arrow_left", "Barrow_up", "Barrow_right", "Barrow_down", "Barrow_left") # the variable name options
         self.stratagem_image = ("assets/stratagempng/ESR.png", "assets/stratagempng/EA.png", "assets/stratagempng/ECB.png", "assets/stratagempng/ESS.png", "assets/stratagempng/ENA.png", 
-                            "assets/stratagempng/E110RP.png", "assets/stratagempng/ESB.png", "assets/stratagempng/OPS.png", "assets/stratagempng/OGB.png", "assets/stratagempng/OGS.png", 
+                            "assets/stratagempng/E110RP.png", "assets/stratagempng/E500B.png", "assets/stratagempng/OPS.png", "assets/stratagempng/OGB.png", "assets/stratagempng/OGS.png", 
                             "assets/stratagempng/O120HEB.png", "assets/stratagempng/OAS.png", "assets/stratagempng/OSS.png", "assets/stratagempng/OEMSS.png", "assets/stratagempng/O380HEB.png", 
                             "assets/stratagempng/OWB.png", "assets/stratagempng/OL.png", "assets/stratagempng/ONB.png", "assets/stratagempng/ORS.png") # list of the names of the file for the stratagem images
         self.keypress_list = (pygame.K_w, pygame.K_d, pygame.K_s, pygame.K_a, pygame.K_UP, pygame.K_RIGHT, pygame.K_DOWN, pygame.K_LEFT)
@@ -44,30 +44,29 @@ class App:
         self.FPS = pygame.time.Clock() # def FPS by clock
 
         self.stratagemList_ci_hand = [] # list of stratagems code for the user to complete
-        self.stratagemList_hand = []
-        self.stratagemList_hand_reset = []
-        self.stratagemList_hand_images = []
+        self.stratagemList_hand = [] # list of the stratagems in the hand
+        self.stratagemList_hand_reset = [] # the current code image used to reset the progress
+        self.stratagemList_hand_images = [] # list of the stratagem pictures
         self.mode = None # how hard/many stratagems
         self.mode_options = ("Trivial", "Hard", "Super Helldive") # the different difficulties
-        self.mode_amount = 7 # temp mode ammount
-        self.stratagem_list_code = []
-        self.name_stratagem_text = ""
-        self.stratagem_text = ""
+        self.mode_amount = 7 # temp mode ammount (ammount of stratagems in a hand)
 
-        self.list_completion = 0
-        self.code_completion = -1
-        self.completion_tracker = False
+        self.list_completion = 0 # varialbe to track what index of the list (compleded code)
+        self.code_completion = -1 # progress on the code
+        self.completion_tracker = False # stops repitition of games code
 
-        self.displayWidth = 800
-        self.displayHeight = 500
-        self.stratagem_text_width = None
-        self.stratagem_text_height = None
-        self.stratagem_text_y = 200
+        self.displayWidth = 800 # width of display
+        self.displayHeight = 500 # height of display
+        self.stratagem_text_width = None # width of the text
+        self.stratagem_text_height = None # height of the text
+        self.stratagem_text_y = 181 # text y position
+        self.stratagem_codeimage_y = 275 # code image y position
+        self.stratagem_rectangle_width = 40 # rectangle width
     def on_init(self):
         pygame.init()
-        self.stratagems = (ESR, EA, ECB, ESS, ENA, E110RP, ESB, OPS, OGB, OGS, O120HEB, OAS, OSS, OEMSS, O380HEB, OWB, OL, ONB, ORS) # Stratagem codes
+        self.stratagems = (ESR, EA, ECB, ESS, ENA, E110RP, E500B, OPS, OGB, OGS, O120HEB, OAS, OSS, OEMSS, O380HEB, OWB, OL, ONB, ORS) # Stratagem codes
         self.display = pygame.display.set_mode((self.displayWidth, self.displayHeight), pygame.HWSURFACE | pygame.DOUBLEBUF) # creates pygame window (size)
-        self.font = pygame.font.Font("font.ttf", 36) # font
+        self.font = pygame.font.Font("font.ttf", 25) # font
 
         '''Images'''
         for i in range(len(self.image_names_var)): # find length of the list for each index
@@ -166,16 +165,16 @@ class App:
         # displays the code images
         for i in range(len(self.stratagemList_ci_hand[0])):
             tcinp = spaceside+ (i*55) # temp code image number position
-            self.display.blit((self.stratagemList_ci_hand[0])[i], (tcinp, 300)) # displays code image
-            self.display.blit((self.stratagemList_ci_hand[0])[i], (tcinp+1, 300)) # displays code image - bolder
-            self.display.blit((self.stratagemList_ci_hand[0])[i], (tcinp, 301)) # displays code image - bolder
+            self.display.blit((self.stratagemList_ci_hand[0])[i], (tcinp, self.stratagem_codeimage_y)) # displays code image
+            self.display.blit((self.stratagemList_ci_hand[0])[i], (tcinp+1, self.stratagem_codeimage_y)) # displays code image - bolder
+            self.display.blit((self.stratagemList_ci_hand[0])[i], (tcinp, self.stratagem_codeimage_y + 1)) # displays code image - bolder
             
         # displays the image of the stratagem
         for i in range(len(self.stratagemList_hand_images[0:5])): # the rangle length of the hand images
             a = i + 1
             if i == 0: # if the value is the second one in the list
-                tcinp = (a*(self.displayWidth-500)/2)
-                self.display.blit((self.stratagemList_hand_images[i]), (tcinp, 75)) # prints images
+                tcinp = (self.displayWidth-500)/2
+                self.display.blit((self.stratagemList_hand_images[i]), (tcinp, 75)) # prints main images
             else:
                 tcinp = (a*(self.displayWidth-600)/2) + 75
                 self.display.blit((self.stratagemList_hand_images[i]), (tcinp, 100)) # prints images
@@ -183,10 +182,14 @@ class App:
         '''Displays text & colour accents'''
         self.stratagem_text_width, self.stratagem_text_height = self.font.size((self.stratagemList_hand[0])["name"]) # grabs the measurements of the text
         text_spaceside = (self.displayWidth - self.stratagem_text_width)/2 # calculates the side of the screen from the start of the text to centre it
-        text_space_x = self.stratagem_text_y - ((50 - self.stratagem_text_height)/2)
+        text_space_y = self.stratagem_text_y - ((self.stratagem_rectangle_width - self.stratagem_text_height)/2)
 
-        pygame.draw.rect(self.display, (255, 255, 0), (50, text_space_x, (self.displayWidth - 100), 50), width=0, border_radius=3)
-
+        pygame.draw.rect(self.display, (238, 238, 51), (((self.displayWidth-500)/2), text_space_y, 500, self.stratagem_rectangle_width), width=0, border_radius=2)
+        pygame.draw.lines(self.display, (238, 238, 51), closed=True, points= 
+            [(((self.displayWidth-500)/2)+2, 77), 
+             (((self.displayWidth-500)/2)+98, 77), 
+             (((self.displayWidth-500)/2)+98, 173), 
+             (((self.displayWidth-500)/2)+2, 173)], width=6)
         text = self.font.render((self.stratagemList_hand[0])["name"], True, (0, 0, 0)) # creates the text data
         self.display.blit(text, (text_spaceside, self.stratagem_text_y)) # displays it
 
