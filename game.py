@@ -30,8 +30,10 @@ ORS = {"name": "Orbital Railcannon Strike", "codeName": "ORS", "code": "21332"}
 display_bg = pygame.Color(0, 0, 0) # background colour for pygame display
 class App:
     def __init__(self):
-        self.image_names = ("assets/arrows/arrow_up.png", "assets/arrows/arrow_right.png", "assets/arrows/arrow_down.png", "assets/arrows/arrow_left.png") # list of the names of the file
-        self.image_names_var = ("arrow_up", "arrow_right", "arrow_down", "arrow_left", "Barrow_up", "Barrow_right", "Barrow_down", "Barrow_left") # the variable name options
+        self.image_names = ("assets/arrows/arrow_up.png", "assets/arrows/arrow_right.png", "assets/arrows/arrow_down.png", "assets/arrows/arrow_left.png", 
+                            "assets/arrows/arrow_up_bold.png", "assets/arrows/arrow_right_bold.png", "assets/arrows/arrow_down_bold.png", "assets/arrows/arrow_left_bold.png") 
+                            # ^ list of the names of arrow file
+        self.image_names_var = ("arrow_up", "arrow_right", "arrow_down", "arrow_left", "arrow_up_bold", "arrow_right_bold", "arrow_down_bold", "Barrow_left_bold") # the variable name options
         self.stratagem_image = ("assets/stratagempng/ESR.png", "assets/stratagempng/EA.png", "assets/stratagempng/ECB.png", "assets/stratagempng/ESS.png", "assets/stratagempng/ENA.png", 
                             "assets/stratagempng/E110RP.png", "assets/stratagempng/E500B.png", "assets/stratagempng/OPS.png", "assets/stratagempng/OGB.png", "assets/stratagempng/OGS.png", 
                             "assets/stratagempng/O120HEB.png", "assets/stratagempng/OAS.png", "assets/stratagempng/OSS.png", "assets/stratagempng/OEMSS.png", "assets/stratagempng/O380HEB.png", 
@@ -70,21 +72,11 @@ class App:
 
         '''Images'''
         for i in range(len(self.image_names_var)): # find length of the list for each index
-            if i <= 3: # if the index < 4
                 image = pygame.transform.smoothscale(pygame.image.load(self.image_names[i]).convert_alpha(), (50, 50))
-                # ^ creates an image by grabbing the image name with the same index in inmage_name (which should be the same direction)
-                image.set_alpha(50) # turn the opacity to 50/255
+                # ^ creates an image by grabbing the image name with the same index in image_name (which should be the same direction)
                 self.image_var_dict[self.image_names_var[i]] = image 
                 # ^ adds a dict to the dict(image_var_dict) which the key is the value from image_name_var which it was in the begining
-            elif i > 3: # if the index is bigger than 3 (indicating its a bold/bright arrow (last 4 in the list))
-                y = i # creates a temp variable y
-                y -= 4 # minuses 4 to match up with the image_name (y-4 will be the same direction, y is just it bolded/brigther)
-                image = pygame.transform.smoothscale(pygame.image.load(self.image_names[y]).convert_alpha(), (50, 50))
-                # ^ creates an image by grabbing the image name in inmage_names which is the same index just minused 4 which will be the same direction
-                image.set_alpha(255) # makes the image fully opaque
-                self.image_var_dict[self.image_names_var[i]] = image
-                # ^ adds a dict to the dict(image_var_dict) which key is the i from before
-        
+    
         # assigns each stratagem with the correct image of the stratagem
         a = 0
         for i in self.stratagems:
