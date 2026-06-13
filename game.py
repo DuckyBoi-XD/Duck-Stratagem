@@ -58,7 +58,7 @@ class App:
         self.code_completion = -1 # progress on the code
         self.completion_tracker = False # stops repitition of games code
 
-        self.displayWidth = 800 # width of display
+        self.displayWidth = 1000 # width of display
         self.displayHeight = 500 # height of display
         self.stratagem_text_width = None # width of the text
         self.stratagem_text_height = None # height of the text
@@ -66,8 +66,9 @@ class App:
         self.stratagem_codeimage_y = None # code image y position
         self.stratagem_rectangle_width = 40 # rectangle width
         self.size_code_image = 50
-        self.tcpin = (self.displayWidth-500)/2 # x position for all display objects to be based on
+        self.tcpin = None # x position for all display objects to be based on
         self.text_space_y = None
+        self.stratagem_imge_list_width = None
 
         self.time_countdown_start = 300
         self.time_countdown = 300
@@ -75,7 +76,7 @@ class App:
         pygame.init()
         self.stratagems = (ESR, EA, ECB, ESS, ENA, E110RP, E500B, OPS, OGB, OGS, O120HEB, OAS, OSS, OEMSS, O380HEB, OWB, OL, ONB, ORS) # Stratagem codes
         self.display = pygame.display.set_mode((self.displayWidth, self.displayHeight), pygame.HWSURFACE | pygame.DOUBLEBUF) # creates pygame window (size)
-        self.font = pygame.font.Font("font.ttf", 25) # font
+        self.font = pygame.font.Font("font.ttf", 20) # font
 
         '''Images'''
         for i in range(len(self.image_names_var)): # find length of the list for each index
@@ -128,7 +129,8 @@ class App:
             else:
                 self.stratagemList_hand_reset = self.stratagemList_ci_hand[0].copy() # sets the reset hand as the hand at the start
                 break
-        
+
+        self.stratagem_imge_list_width = (len(self.stratagemList_hand_images[0:6]) * 100) + 25
         pygame.display.set_caption("Duck Stratagem") # Display window name
         self._running = True # sets var to true when game runs again?
 
@@ -158,12 +160,12 @@ class App:
         '''displays the image (the code)'''
         length_of_list = self.stratagemList_hand[0]["length"]
         stratagem_codeimage_width = (length_of_list*self.size_code_image) + ((length_of_list-1)*20)
-        codeImage_extra_space = ((500 - stratagem_codeimage_width)/2)
+        codeImage_extra_space = ((self.stratagem_imge_list_width - stratagem_codeimage_width)/2)
             
         # displays the image of the stratagem
-        for i in range(len(self.stratagemList_hand_images[0:5])): # the rangle length of the hand images
+        for i in range(len(self.stratagemList_hand_images[0:6])): # the rangle length of the hand images
             if i == 0: # if the value is the second one in the list
-                # where tcpin would be 
+                self.tcpin = (self.displayWidth-self.stratagem_imge_list_width)/2
                 self.display.blit((self.stratagemList_hand_images[i]), (self.tcpin, 75)) # prints main images
             else:
                 tcinp = (i*(100)) + self.tcpin + 25
@@ -171,7 +173,7 @@ class App:
 
         '''Displays text & colour accents'''
         self.stratagem_text_width, self.stratagem_text_height = self.font.size((self.stratagemList_hand[0])["name"]) # grabs the measurements of the text
-        text_spaceside = ((500 - self.stratagem_text_width)/2) + self.tcpin # calculates the side of the screen from the start of the text to centre it
+        text_spaceside = ((self.stratagem_imge_list_width - self.stratagem_text_width)/2) + self.tcpin # calculates the side of the screen from the start of the text to centre it
         self.text_space_y = self.stratagem_text_y - ((self.stratagem_rectangle_width - self.stratagem_text_height)/2)
 
         # displays the code images
@@ -180,7 +182,7 @@ class App:
             tcinp = self.tcpin + codeImage_extra_space + (i*(self.size_code_image+20)) # temp code image number position
             self.display.blit((self.stratagemList_ci_hand[0])[i], (tcinp, self.stratagem_codeimage_y)) # displays code image
 
-        pygame.draw.rect(self.display, (254,254,17), (self.tcpin, self.text_space_y, 500, self.stratagem_rectangle_width), width=0, border_radius=0)
+        pygame.draw.rect(self.display, (254,254,17), (self.tcpin, self.text_space_y, self.stratagem_imge_list_width, self.stratagem_rectangle_width), width=0, border_radius=0)
         pygame.draw.lines(self.display, (254,254,17), closed=True, points=
             [(self.tcpin +1, 77),
              (self.tcpin+98, 77), 
@@ -190,8 +192,8 @@ class App:
         self.display.blit(text, (text_spaceside, self.stratagem_text_y)) # displays it
 
     def timer_countdown(self):
-        time_bar = self.time_countdown*(500/self.time_countdown_start)
-        pygame.draw.rect(self.display, (153, 153, 153), (self.tcpin, self.stratagem_codeimage_y + 100, 500, 20), width=0, border_radius=0)
+        time_bar = self.time_countdown*(self.stratagem_imge_list_width/self.time_countdown_start)
+        pygame.draw.rect(self.display, (153, 153, 153), (self.tcpin, self.stratagem_codeimage_y + 100, self.stratagem_imge_list_width, 20), width=0, border_radius=0)
         pygame.draw.rect(self.display, (254,254,17), (self.tcpin, self.stratagem_codeimage_y + 100, time_bar, 20), width=0, border_radius=0)
 
         self.time_countdown -= 1
