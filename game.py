@@ -75,11 +75,14 @@ class App:
         self.time_countdown_start = 900
         self.time_countdown = 900
         self.time_increase = 90
+
+        self.game_start = True
     def on_init(self):
         pygame.init()
         self.stratagems = (ESR, EA, ECB, ESS, ENA, E110RP, E500B, OPS, OGB, OGS, O120HEB, OAS, OSS, OEMSS, O380HEB, OWB, OL, ONB, ORS) # Stratagem codes
         self.display = pygame.display.set_mode((self.displayWidth, self.displayHeight), pygame.HWSURFACE | pygame.DOUBLEBUF) # creates pygame window (size)
         self.font = pygame.font.Font("assets/font/font.ttf", 25) # font
+        self.titlefont = pygame.font.Font("assets/font/titlefont.ttf", 30) # font for title
 
         '''Images'''
         for i in range(len(self.image_names_var)): # find length of the list for each index
@@ -137,6 +140,26 @@ class App:
         pygame.display.set_caption("Duck Stratagem") # Display window name
         self._running = True # sets var to true when game runs again?
 
+    def starting_game(self):
+        '''Begining screen when playing the game'''
+        start_text_title_txt = "Duck Stratagem"
+        start_text_txt = "Press any stratagem input to start!"
+
+        start_text_title = self.titlefont.render(start_text_title_txt, True, (255, 255, 255))
+        start_text = self.font.render(start_text_txt, True, (254, 254, 17))
+
+        start_text_titlex, start_text_titley = self.titlefont.size(start_text_title_txt)
+        start_textx, start_texty = self.font.size(start_text_txt)
+
+        start_text_title_height = (self.displayHeight - (start_text_titley + 50 + start_texty))/2
+        start_text_height = (self.displayHeight - start_text_titley + 50)/2
+
+        self.display.blit(start_text_title, ((self.displayWidth - start_text_titlex)/2, start_text_title_height)) # displays it
+        self.display.blit(start_text, ((self.displayWidth - start_textx)/2, start_text_height)) # displays it
+
+        pygame.draw.rect(self.display, (255, 255, 255), (0, 40, self.displayWidth, 10), width=0, border_radius=0)
+        pygame.draw.rect(self.display, (255, 255, 255), (0, self.displayHeight - 50, self.displayWidth, 10), width=0, border_radius=0)
+        
     def code_image_display_active(self, completion):
         '''Function that will grab the first code image of the list and display it'''
 
@@ -210,6 +233,9 @@ class App:
         scoreTextValue = self.font.render(str(self.score), True, (255, 255, 255)) # creates the text data
         self.display.blit(scoreTextValue, (self.tcpin + self.stratagem_imge_list_width + ((self.tcpin - scoreTextTitlex)/2) + scoreTextTitlex - scoreTextValuex, 90)) # displays it
 
+        pygame.draw.rect(self.display, (255, 255, 255), (0, 40, self.displayWidth, 10), width=0, border_radius=0)
+        pygame.draw.rect(self.display, (255, 255, 255), (0, self.displayHeight - 50, self.displayWidth, 10), width=0, border_radius=0)
+
     def timer_countdown(self):
         time_bar = self.time_countdown*(self.stratagem_imge_list_width/self.time_countdown_start)
         pygame.draw.rect(self.display, (153, 153, 153), (self.tcpin, self.stratagem_codeimage_y + 100, self.stratagem_imge_list_width, 20), width=0, border_radius=0)
@@ -238,6 +264,8 @@ class App:
             for event in pygame.event.get(): # grabs the events (keyboard triggers etc)
                 self.on_event(event) # checks if the game has 'quitted'?
                 if event.type == pygame.KEYDOWN: # if the event is a key press
+                    if self.game_start is True:
+                        self.game_start = False
                     for i in self.keypress_list: # for every value in the keypress list (key presses like wasd and arrow keys)
                         check_code_index = self.code_completion + 1 # creates variable of check code index
                         if event.key == i: # if the event key is one of the values in keypress (doesn't active if its a random key)
@@ -278,9 +306,11 @@ class App:
 
                                     else: # if the input is not the correct one 
                                         self.code_completion = -1 # resets progress
-
-            self.code_image_display_active(self.code_completion) # displays code image function
-            self.timer_countdown()
+            if self.game_start is True:
+                self.starting_game()
+            else:
+                self.code_image_display_active(self.code_completion) # displays code image function
+                self.timer_countdown()
 
             self.on_loop()
             self.on_render()
