@@ -40,6 +40,7 @@ class App:
         self.image_var_dict = {}
 
         self.fps = 60
+        self.colour = (254, 254, 17)
 
         self._running = True # sets var to true when game runs
         self._display_surf = None # def the var for display
@@ -70,11 +71,13 @@ class App:
         self.text_space_y = None
         self.stratagem_imge_list_width = None
 
-        self.time_countdown_start = 900
-        self.time_countdown = 900
-        self.time_increase = 90
+        self.time_countdown_start = 15 * self.fps
+        self.time_countdown = 15 * self.fps
+        self.time_increase = 1.5 * self.fps
 
-        self.game_start = True
+        self.game_starting_value = True
+        self.countdown = 240
+        self.game_start_screen = False
     def on_init(self):
         pygame.init()
         self.stratagems = (ESR, EA, ECB, ESS, ENA, E110RP, E500B, OPS, OGB, OGS, O120HEB, OAS, OSS, OEMSS, O380HEB, OWB, OL, ONB, ORS) # Stratagem codes
@@ -144,7 +147,7 @@ class App:
         start_text_txt = "Press any stratagem input to start!"
 
         start_text_title = self.titlefont.render(start_text_title_txt, True, (255, 255, 255))
-        start_text = self.font.render(start_text_txt, True, (254, 254, 17))
+        start_text = self.font.render(start_text_txt, True, self.colour)
 
         start_text_titlex, start_text_titley = self.titlefont.size(start_text_title_txt)
         start_textx, start_texty = self.font.size(start_text_txt)
@@ -158,8 +161,42 @@ class App:
         pygame.draw.rect(self.display, (255, 255, 255), (0, 40, self.displayWidth, 10), width=0, border_radius=0)
         pygame.draw.rect(self.display, (255, 255, 255), (0, self.displayHeight - 50, self.displayWidth, 10), width=0, border_radius=0)
 
-    def game_start(self):
-        pass
+    def game_starting(self):
+        self.countdown -= 1
+        if 180 <= self.countdown > 120:
+            countdown_text = "3"
+        elif 120 <= self.countdown > 60:
+            countdown_text = "2"
+        elif 60 <= self.countdown > 0:
+            countdown_text = "1"
+        else:
+            countdown_text = "0"
+            self.game_starting_value = False
+
+        
+        pygame.draw.rect(self.display, (255, 255, 255), (0, 40, self.displayWidth, 10), width=0, border_radius=0)
+        pygame.draw.rect(self.display, (255, 255, 255), (0, self.displayHeight - 50, self.displayWidth, 10), width=0, border_radius=0)
+
+        countdown_text_title = self.titlefont.render("Get Ready", True, (255, 255, 255))
+        countdown_text_text = self.font.render(f"Round {self.round}", True, (255, 255, 255))
+        countdown_text_value = self.font.render(countdown_text, True, (255, 255, 255))
+
+        #Variable names based on variables above
+        cttWidth, cttLength = self.titlefont.size("Get Ready")
+        cttxtWidth, cttxtLength = self.font.size(f"Round {self.round}")
+        ctvWidth, ctvLength = self.font.size(countdown_text)
+
+        cttx = (self.displayWidth - cttWidth)/2
+        cttxtx = (self.displayWidth - cttxtWidth)/2
+        ctvx = (self.displayWidth - ctvWidth)/2
+
+        ctty = (self.displayHeight - (cttLength + cttxtLength + ctvLength + 45))/2
+        cttxty = ctty + cttLength + 15
+        ctvy = cttxty + cttxtLength + 15
+
+        self.display.blit(countdown_text_title, (cttx, ctty))
+        self.display.blit(countdown_text_text, (cttxtx, cttxty))
+        self.display.blit(countdown_text_value, (ctvx, ctvy))
         
     def code_image_display_active(self, completion):
         '''Function that will grab the first code image of the list and display it'''
@@ -208,8 +245,8 @@ class App:
             tcinp = self.tcpin + codeImage_extra_space + (i*(self.size_code_image+20)) # temp code image number position
             self.display.blit((self.stratagemList_ci_hand[0])[i], (tcinp, self.stratagem_codeimage_y)) # displays code image
 
-        pygame.draw.rect(self.display, (254,254,17), (self.tcpin, self.text_space_y, self.stratagem_imge_list_width, self.stratagem_rectangle_width), width=0, border_radius=0)
-        pygame.draw.lines(self.display, (254,254,17), closed=True, points=
+        pygame.draw.rect(self.display, self.colour, (self.tcpin, self.text_space_y, self.stratagem_imge_list_width, self.stratagem_rectangle_width), width=0, border_radius=0)
+        pygame.draw.lines(self.display, self.colour, closed=True, points=
             [(self.tcpin +1, 77),
              (self.tcpin+98, 77), 
              (self.tcpin+98, 175), 
@@ -222,7 +259,7 @@ class App:
         roundTextTitlex, roundTextTitley = self.font.size("Round")
         self.display.blit(roundTextTitle, ((self.tcpin - roundTextTitlex)/2, 90)) # displays it
 
-        roundTextValue = self.font.render(str(self.round), True, (255, 255, 255)) # creates the text data
+        roundTextValue = self.font.render(str(self.round), True, self.colour) # creates the text data
         self.display.blit(roundTextValue, ((self.tcpin - roundTextTitlex)/2, 115)) # displays it
 
         scoreTextTitle = self.font.render("Score", True, (255, 255, 255)) # creates the text data
@@ -230,7 +267,7 @@ class App:
         scoreTextValuex, scoreTextValuey = self.font.size(str(self.score))
         self.display.blit(scoreTextTitle, (self.tcpin + self.stratagem_imge_list_width + (self.tcpin - scoreTextTitlex)/2, 115)) # displays it
 
-        scoreTextValue = self.font.render(str(self.score), True, (255, 255, 255)) # creates the text data
+        scoreTextValue = self.font.render(str(self.score), True, self.colour) # creates the text data
         self.display.blit(scoreTextValue, (self.tcpin + self.stratagem_imge_list_width + ((self.tcpin - scoreTextTitlex)/2) + scoreTextTitlex - scoreTextValuex, 90)) # displays it
 
         pygame.draw.rect(self.display, (255, 255, 255), (0, 40, self.displayWidth, 10), width=0, border_radius=0)
@@ -239,7 +276,7 @@ class App:
     def timer_countdown(self):
         time_bar = self.time_countdown*(self.stratagem_imge_list_width/self.time_countdown_start)
         pygame.draw.rect(self.display, (153, 153, 153), (self.tcpin, self.stratagem_codeimage_y + 100, self.stratagem_imge_list_width, 20), width=0, border_radius=0)
-        pygame.draw.rect(self.display, (254,254,17), (self.tcpin, self.stratagem_codeimage_y + 100, time_bar, 20), width=0, border_radius=0)
+        pygame.draw.rect(self.display, self.colour, (self.tcpin, self.stratagem_codeimage_y + 100, time_bar, 20), width=0, border_radius=0)
 
         self.time_countdown -= 1
         if self.time_countdown <= 0:
@@ -264,8 +301,8 @@ class App:
             for event in pygame.event.get(): # grabs the events (keyboard triggers etc)
                 self.on_event(event) # checks if the game has 'quitted'?
                 if event.type == pygame.KEYDOWN: # if the event is a key press
-                    if self.game_start is True:
-                        self.game_start = False
+                    if self.game_start_screen is False:
+                        self.game_start_screen = True
                     for i in self.keypress_list: # for every value in the keypress list (key presses like wasd and arrow keys)
                         check_code_index = self.code_completion + 1 # creates variable of check code index
                         if event.key == i: # if the event key is one of the values in keypress (doesn't active if its a random key)
@@ -306,8 +343,11 @@ class App:
 
                                     else: # if the input is not the correct one 
                                         self.code_completion = -1 # resets progress
-            if self.game_start is True:
+            if self.game_start_screen is False:
                 self.starting_game()
+            elif self.game_start_screen is True and self.game_starting_value is True:
+                self.game_starting()
+                print("test")
             else:
                 self.code_image_display_active(self.code_completion) # displays code image function
                 self.timer_countdown()
