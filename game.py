@@ -41,7 +41,7 @@ class App:
         self.keypress_list = (pygame.K_w, pygame.K_d, pygame.K_s, pygame.K_a, pygame.K_UP, pygame.K_RIGHT, pygame.K_DOWN, pygame.K_LEFT)
         self.image_var_dict = {}
 
-        self.fps = 30
+        self.fps = 60
 
         self._running = True # sets var to true when game runs
         self._display_surf = None # def the var for display
@@ -53,13 +53,15 @@ class App:
         self.stratagemList_hand_images = [] # list of the stratagem pictures
         self.mode = None # how hard/many stratagems
         self.mode_amount = 7 # temp mode ammount (ammount of stratagems in a hand)
+        self.round = 1
+        self.score = 0
 
         self.list_completion = 0 # varialbe to track what index of the list (compleded code)
         self.code_completion = -1 # progress on the code
         self.completion_tracker = False # stops repitition of games code
 
         self.displayWidth = 1000 # width of display
-        self.displayHeight = 500 # height of display
+        self.displayHeight = 450 # height of display
         self.stratagem_text_width = None # width of the text
         self.stratagem_text_height = None # height of the text
         self.stratagem_text_y = 181 # text y position
@@ -70,13 +72,14 @@ class App:
         self.text_space_y = None
         self.stratagem_imge_list_width = None
 
-        self.time_countdown_start = 300
-        self.time_countdown = 300
+        self.time_countdown_start = 900
+        self.time_countdown = 900
+        self.time_increase = 90
     def on_init(self):
         pygame.init()
         self.stratagems = (ESR, EA, ECB, ESS, ENA, E110RP, E500B, OPS, OGB, OGS, O120HEB, OAS, OSS, OEMSS, O380HEB, OWB, OL, ONB, ORS) # Stratagem codes
         self.display = pygame.display.set_mode((self.displayWidth, self.displayHeight), pygame.HWSURFACE | pygame.DOUBLEBUF) # creates pygame window (size)
-        self.font = pygame.font.Font("font.ttf", 20) # font
+        self.font = pygame.font.Font("assets/font/font.ttf", 25) # font
 
         '''Images'''
         for i in range(len(self.image_names_var)): # find length of the list for each index
@@ -191,6 +194,22 @@ class App:
         text = self.font.render((self.stratagemList_hand[0])["name"], True, (0, 0, 0)) # creates the text data
         self.display.blit(text, (text_spaceside, self.stratagem_text_y)) # displays it
 
+
+        roundTextTitle = self.font.render("Round", True, (255, 255, 255)) # creates the text data
+        roundTextTitlex, roundTextTitley = self.font.size("Round")
+        self.display.blit(roundTextTitle, ((self.tcpin - roundTextTitlex)/2, 90)) # displays it
+
+        roundTextValue = self.font.render(str(self.round), True, (255, 255, 255)) # creates the text data
+        self.display.blit(roundTextValue, ((self.tcpin - roundTextTitlex)/2, 115)) # displays it
+
+        scoreTextTitle = self.font.render("Score", True, (255, 255, 255)) # creates the text data
+        scoreTextTitlex, scoreTextTitley = self.font.size("Score")
+        scoreTextValuex, scoreTextValuey = self.font.size(str(self.score))
+        self.display.blit(scoreTextTitle, (self.tcpin + self.stratagem_imge_list_width + (self.tcpin - scoreTextTitlex)/2, 115)) # displays it
+
+        scoreTextValue = self.font.render(str(self.score), True, (255, 255, 255)) # creates the text data
+        self.display.blit(scoreTextValue, (self.tcpin + self.stratagem_imge_list_width + ((self.tcpin - scoreTextTitlex)/2) + scoreTextTitlex - scoreTextValuex, 90)) # displays it
+
     def timer_countdown(self):
         time_bar = self.time_countdown*(self.stratagem_imge_list_width/self.time_countdown_start)
         pygame.draw.rect(self.display, (153, 153, 153), (self.tcpin, self.stratagem_codeimage_y + 100, self.stratagem_imge_list_width, 20), width=0, border_radius=0)
@@ -215,9 +234,6 @@ class App:
         while(self._running): # constant loop when _running
             self.FPS.tick(self.fps) # sets fps
             
-            self.code_image_display_active(self.code_completion) # displays code image function
-            self.timer_countdown()
-            
             '''Tracks the user's keyboard input and checks if it is correct'''
             for event in pygame.event.get(): # grabs the events (keyboard triggers etc)
                 self.on_event(event) # checks if the game has 'quitted'?
@@ -234,15 +250,38 @@ class App:
                                         self.completion_tracker = False
                                         if self.code_completion +1 == self.stratagemList_hand[0]["length"]:
                                         # ^ if the completion index (the index of the completed code image) is more than length (compels and entire code) it grabs a new code by removing the first 
-                                            self.code_completion = -1 # resets the progress on the code (because its a new list)
-                                            self.stratagemList_ci_hand.pop(0) # removes the first list item
-                                            self.stratagemList_hand.pop(0)# removes the first list item
-                                            self.stratagemList_hand_images.pop(0)
-                                            self.stratagemList_hand_reset = self.stratagemList_ci_hand[0].copy() # sets the reset hand to the new code
-                                            self.time_countdown += 30
-                                            break
+                                            try:
+                                                self.code_completion = -1 # resets the progress on the code (because its a new list)
+                                                self.stratagemList_ci_hand.pop(0) # removes the first list item
+                                                self.stratagemList_hand.pop(0)# removes the first list item
+                                                self.stratagemList_hand_images.pop(0)
+                                                self.stratagemList_hand_reset = self.stratagemList_ci_hand[0].copy() # sets the reset hand to the new code
+                                                self.time_countdown += self.time_increase
+                                                break
+                                            except IndexError:
+                                                SAC = 0 # stratagem_amount_count
+                                                while True: # creates a list of stratagems for the user to complete
+                                                    if SAC < self.mode_amount: # checks if it has created enough codes
+                                                        temp_stratagem = random.choice(self.stratagems)
+                                                        self.stratagemList_hand.append(temp_stratagem)
+                                                        self.stratagemList_ci_hand.append(temp_stratagem["codeImageList"])
+                                                        self.stratagemList_hand_images.append(temp_stratagem["image"])
+                                                        # ^ grabs a random stratagem image code list and adds it to the stratagem list code images list
+                                                        # A random dict/variable in stratagems and grabs the "codeImageList" and adds it to another list which is the playing hand
+                                                        SAC += 1 # adds 1 to the count to indicated another has been added
+                                                    else:
+                                                        self.stratagemList_hand_reset = self.stratagemList_ci_hand[0].copy() # sets the reset hand as the hand at the start
+                                                        self.round += 1
+                                                        # new stratagem list /round
+                                                        break
+
+
                                     else: # if the input is not the correct one 
                                         self.code_completion = -1 # resets progress
+
+            self.code_image_display_active(self.code_completion) # displays code image function
+            self.timer_countdown()
+
             self.on_loop()
             self.on_render()
             pygame.display.flip() # updates display
