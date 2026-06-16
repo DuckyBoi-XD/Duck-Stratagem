@@ -86,6 +86,7 @@ class App:
         self.perfection_track = True
         self.score_adder = True
         self.total_score_value = 0
+        self.key_allow = False
     def on_init(self):
         pygame.init()
         self.stratagems = (ESR, EA, ECB, ESS, ENA, E110RP, E500B, OPS, OGB, OGS, O120HEB, OAS, OSS, OEMSS, O380HEB, OWB, OL, ONB, ORS) # Stratagem codes
@@ -182,11 +183,8 @@ class App:
             countdown_text = "1"
         else:
             countdown_text = "0"
-            print(0)
-            print(self.countdown)
             if self.game_starting_value is True:
                 self.game_starting_value = False
-            print(self.countdown)
 
         pygame.draw.rect(self.display, (255, 255, 255), (0, 40, self.displayWidth, 10), width=0, border_radius=0)
         pygame.draw.rect(self.display, (255, 255, 255), (0, self.displayHeight - 50, self.displayWidth, 10), width=0, border_radius=0)
@@ -406,6 +404,9 @@ class App:
                                 self.points_scoring = False
                                 self.countdown = self.cooldown_start
                                 temp_value = 1
+                            if not self.key_allow:
+                                print("no")
+                                break
                             if temp_value == 1:
                                 break
                             for a in range(4): # goes through each value from 0-3
@@ -415,6 +416,7 @@ class App:
                                     # ^ if a + 1 (range index that is equal to the keypress +1 to be aligned with the code) equals  the first digit in the code (the first code) 
                                         self.code_completion += 1 # adds one to code completion counter
                                         self.completion_tracker = False
+                                        print("correct")
                                         if self.code_completion +1 == self.stratagemList_hand[0]["length"]:
                                         # ^ if the completion index (the index of the completed code image) is more than length (compels and entire code) it grabs a new code by removing the first 
                                             try:
@@ -451,7 +453,7 @@ class App:
                                                             self.perfect_multi_colour = self.colour
                                                             pmv = 2
                                                         elif self.perfection_track is False:
-                                                            self.perfect_multi_value = "0"
+                                                            self.perfect_multi_value = "1.0x"
                                                             self.perfect_multi_colour = (224, 0, 0)
                                                             pmv = 1
                                                         else:
@@ -475,9 +477,12 @@ class App:
                 self.game_starting_value = True
                 self.midgame_start = True
                 self.time_countdown = self.time_countdown_start
+                self.perfection_track = True
             elif self.game_start_screen is False and self.game_starting_value is True or self.midgame_start is False and self.game_starting_value is True:
+                self.key_allow = False
                 self.game_starting()
             else:
+                self.key_allow = True
                 self.code_image_display_active(self.code_completion) # displays code image function
                 self.timer_countdown()
 
