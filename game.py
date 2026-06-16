@@ -51,7 +51,7 @@ class App:
         self.stratagemList_hand_reset = [] # the current code image used to reset the progress
         self.stratagemList_hand_images = [] # list of the stratagem pictures
         self.mode = None # how hard/many stratagems
-        self.mode_amount = 7 # temp mode ammount (ammount of stratagems in a hand)
+        self.mode_amount = 5 # temp mode ammount (ammount of stratagems in a hand)
         self.round = 1
         self.score = 0
 
@@ -76,14 +76,24 @@ class App:
         self.time_increase = 1.5 * self.fps
 
         self.game_starting_value = True
-        self.countdown = 240
-        self.game_start_screen = False
+        self.cooldown_start = 180
+        self.countdown = 180
+        self.game_start_screen = True
+        self.midgame_start = False
+        self.game_play = False
+        self.points_scoring = False
+
+        self.perfection_track = True
+        self.score_adder = True
+        self.total_score_value = 0
     def on_init(self):
         pygame.init()
         self.stratagems = (ESR, EA, ECB, ESS, ENA, E110RP, E500B, OPS, OGB, OGS, O120HEB, OAS, OSS, OEMSS, O380HEB, OWB, OL, ONB, ORS) # Stratagem codes
         self.display = pygame.display.set_mode((self.displayWidth, self.displayHeight), pygame.HWSURFACE | pygame.DOUBLEBUF) # creates pygame window (size)
         self.font = pygame.font.Font("assets/font/font.ttf", 25) # font
+        self.fontp2 = pygame.font.Font("assets/font/font.ttf", 20) # 2nd paragraphfont
         self.titlefont = pygame.font.Font("assets/font/titlefont.ttf", 30) # font for title
+        self.titlefonth2 = pygame.font.Font("assets/font/titlefont.ttf", 25) # 2nd font for title
 
         '''Images'''
         for i in range(len(self.image_names_var)): # find length of the list for each index
@@ -162,26 +172,30 @@ class App:
         pygame.draw.rect(self.display, (255, 255, 255), (0, self.displayHeight - 50, self.displayWidth, 10), width=0, border_radius=0)
 
     def game_starting(self):
+        '''game starting countdown'''
         self.countdown -= 1
-        if 180 <= self.countdown > 120:
+        if 180 >= self.countdown > 120:
             countdown_text = "3"
-        elif 120 <= self.countdown > 60:
+        elif 120 >= self.countdown > 60:
             countdown_text = "2"
-        elif 60 <= self.countdown > 0:
+        elif 60 >= self.countdown > 0:
             countdown_text = "1"
         else:
             countdown_text = "0"
-            self.game_starting_value = False
+            print(0)
+            print(self.countdown)
+            if self.game_starting_value is True:
+                self.game_starting_value = False
+            print(self.countdown)
 
-        
         pygame.draw.rect(self.display, (255, 255, 255), (0, 40, self.displayWidth, 10), width=0, border_radius=0)
         pygame.draw.rect(self.display, (255, 255, 255), (0, self.displayHeight - 50, self.displayWidth, 10), width=0, border_radius=0)
 
+        # creating and displaying the text/objects
         countdown_text_title = self.titlefont.render("Get Ready", True, (255, 255, 255))
-        countdown_text_text = self.font.render(f"Round {self.round}", True, (255, 255, 255))
+        countdown_text_text = self.font.render(f"Round {self.round}", True, self.colour)
         countdown_text_value = self.font.render(countdown_text, True, (255, 255, 255))
 
-        #Variable names based on variables above
         cttWidth, cttLength = self.titlefont.size("Get Ready")
         cttxtWidth, cttxtLength = self.font.size(f"Round {self.round}")
         ctvWidth, ctvLength = self.font.size(countdown_text)
@@ -207,14 +221,15 @@ class App:
         elif completion != -1: # if the completion number is not 0
             if completion < self.stratagemList_hand[0]["length"] and self.completion_tracker == False: # Checks if the completion index is smaller or equal to the length of the current code
             # ^ if the completion index(the index of the correct press key) is smaller or equal to the length of the code
-                temp_image = (self.stratagemList_ci_hand[0])[completion] # create a temp variable of the completion index of whatever the list is (what the player is on)
-                for i in range(4): # for 0-3
-                    if self.image_var_dict[self.image_names_var[i]] == temp_image: 
-                    # ^ goes through the first 4 keys (i changing) to see if the value is the same in which, we know what the code image is
-                        (self.stratagemList_ci_hand[0])[completion] = self.image_var_dict[self.image_names_var[i+4]]
-                        # ^ changes the code image to a bolder/brigher image
-                        # ^ goes to whatever the list code the player is on, goes into the image/value they are on and changes into the dict value of the original image + 4
-                        self.completion_tracker = True
+                for b in range(completion+1):
+                    temp_image = (self.stratagemList_ci_hand[0])[b] # create a temp variable of the completion index of whatever the list is (what the player is on)
+                    for i in range(4): # for 0-3
+                        if self.image_var_dict[self.image_names_var[i]] == temp_image: 
+                        # ^ goes through the first 4 keys (i changing) to see if the value is the same in which, we know what the code image is
+                            (self.stratagemList_ci_hand[0])[b] = self.image_var_dict[self.image_names_var[i+4]]
+                            # ^ changes the code image to a bolder/brigher image
+                            # ^ goes to whatever the list code the player is on, goes into the image/value they are on and changes into the dict value of the original image + 4
+                            self.completion_tracker = True
 
         image = self.stratagemList_hand_images[0].copy()
         image.set_alpha(255)
@@ -264,10 +279,10 @@ class App:
 
         scoreTextTitle = self.font.render("Score", True, (255, 255, 255)) # creates the text data
         scoreTextTitlex, scoreTextTitley = self.font.size("Score")
-        scoreTextValuex, scoreTextValuey = self.font.size(str(self.score))
+        scoreTextValuex, scoreTextValuey = self.font.size(str(int(self.score)))
         self.display.blit(scoreTextTitle, (self.tcpin + self.stratagem_imge_list_width + (self.tcpin - scoreTextTitlex)/2, 115)) # displays it
 
-        scoreTextValue = self.font.render(str(self.score), True, self.colour) # creates the text data
+        scoreTextValue = self.font.render(str(int(self.score)), True, self.colour) # creates the text data
         self.display.blit(scoreTextValue, (self.tcpin + self.stratagem_imge_list_width + ((self.tcpin - scoreTextTitlex)/2) + scoreTextTitlex - scoreTextValuex, 90)) # displays it
 
         pygame.draw.rect(self.display, (255, 255, 255), (0, 40, self.displayWidth, 10), width=0, border_radius=0)
@@ -281,6 +296,83 @@ class App:
         self.time_countdown -= 1
         if self.time_countdown <= 0:
             pass
+
+    
+    def score_count(self):
+        '''End of round score calculator/display'''
+        pygame.draw.rect(self.display, (255, 255, 255), (0, 40, self.displayWidth, 10), width=0, border_radius=0)
+        pygame.draw.rect(self.display, (255, 255, 255), (0, self.displayHeight - 50, self.displayWidth, 10), width=0, border_radius=0)
+
+        # all the text/title
+        score_points_title_str = "Points Scored"
+        stratagem_completion_text_str = "Round Points"
+        time_bonus_text_str = "Time Bonus"
+        perfect_multi_text_str = "Perfection Multiplier"
+        round_multi_text_str = "Round Multiplier"
+        total_score_str = "Total Round Score"
+        score_str = "Total Score"
+        next_round_str = "Press any stratagem input to start!"
+
+
+
+        #converting values into pygame text
+        score_points_title = self.titlefonth2.render(score_points_title_str, True, (255, 255, 255))
+        stratagem_completion_text = self.fontp2.render(stratagem_completion_text_str, True, self.colour)
+        time_bonus_text = self.fontp2.render(time_bonus_text_str, True, self.colour)
+        perfect_multi_text = self.fontp2.render(perfect_multi_text_str, True, self.colour)
+        round_multi_text = self.fontp2.render(round_multi_text_str, True, self.colour)
+        total_score_text = self.fontp2.render(total_score_str, True, (255, 255, 255))
+        score_text = self.fontp2.render(score_str, True, (255, 255, 255))
+        next_round_text = self.fontp2.render(next_round_str, True, self.colour)
+
+
+        cptWidth, cptLength = self.titlefont.size(score_points_title_str)
+        sctWidth, sctLength = self.fontp2.size(stratagem_completion_text_str)
+        tbtWidth, tbtLength = self.fontp2.size(time_bonus_text_str)
+        pmtWidth, pmtLength = self.fontp2.size(perfect_multi_text_str)
+        rmtWidth, rmtLength = self.fontp2.size(round_multi_text_str)
+        tsWidth, tsLength = self.fontp2.size(total_score_str)
+        sdWidth, sdLength = self.fontp2.size(score_str)
+        nrWidth, nrLength = self.fontp2.size(next_round_str)
+
+        stratagem_completion_value_text = self.fontp2.render(self.stratagem_completion_value, True, self.colour)
+        time_bonus_value_text = self.fontp2.render(self.time_bonus_value, True, self.colour)
+        perfect_multi_value_text = self.fontp2.render(self.perfect_multi_value, True, self.perfect_multi_colour)
+        round_multi_value_text = self.fontp2.render(self.round_multi_value, True, self.colour)
+        total_score_value_text = self.fontp2.render(str(self.total_score_value), True, (255, 255, 255))
+        score_display_value_text = self.fontp2.render(self.score_value, True, (255, 255, 255))
+
+        DFT = 80
+        # Make them pop out eventually
+        self.display.blit(score_points_title, ((self.displayWidth - cptWidth)/2, 70))
+        self.display.blit(stratagem_completion_text, (150, DFT + cptLength))
+        DFT += 15
+        self.display.blit(time_bonus_text, (150, DFT + cptLength + sctLength))
+        DFT += 15
+        self.display.blit(perfect_multi_text, (150, DFT + cptLength + sctLength + tbtLength))
+        DFT += 15
+        self.display.blit(round_multi_text, (150, DFT + cptLength + sctLength + tbtLength + pmtLength))
+        DFT += 15
+        self.display.blit(total_score_text, (150, DFT + cptLength + sctLength + tbtLength + pmtLength + rmtLength))
+        DFT += 15
+        self.display.blit(score_text, (150, DFT + cptLength + sctLength + tbtLength + pmtLength + rmtLength + tsLength))
+        DFT += 15
+        nr_sidespace = (self.displayWidth - nrWidth)/2
+        self.display.blit(next_round_text, (nr_sidespace, DFT + cptLength + sctLength + tbtLength + pmtLength + rmtLength + tsLength + sdLength))
+
+        DFT = 80
+
+        self.display.blit(stratagem_completion_value_text, (self.displayWidth - 250, DFT + cptLength))
+        DFT += 15
+        self.display.blit(time_bonus_value_text, (self.displayWidth - 250, DFT + cptLength + sctLength))
+        DFT += 15
+        self.display.blit(perfect_multi_value_text, (self.displayWidth - 250, DFT + cptLength + sctLength + tbtLength))
+        DFT += 15
+        self.display.blit(round_multi_value_text, (self.displayWidth - 250, DFT + cptLength + sctLength + tbtLength + pmtLength))
+        DFT += 15
+        self.display.blit(total_score_value_text, (self.displayWidth - 250, DFT + cptLength + sctLength + tbtLength + pmtLength + rmtLength))
+        DFT += 15
+        self.display.blit(score_display_value_text, (self.displayWidth - 250, DFT + cptLength + sctLength + tbtLength + pmtLength + rmtLength + tsLength))
 
     def on_event(self, event):
         if event.type == pygame.QUIT: # if the game is exitted out of
@@ -301,11 +393,21 @@ class App:
             for event in pygame.event.get(): # grabs the events (keyboard triggers etc)
                 self.on_event(event) # checks if the game has 'quitted'?
                 if event.type == pygame.KEYDOWN: # if the event is a key press
-                    if self.game_start_screen is False:
-                        self.game_start_screen = True
                     for i in self.keypress_list: # for every value in the keypress list (key presses like wasd and arrow keys)
                         check_code_index = self.code_completion + 1 # creates variable of check code index
                         if event.key == i: # if the event key is one of the values in keypress (doesn't active if its a random key)
+                            temp_value = 0
+                            if self.game_start_screen is True:
+                                self.game_start_screen = False
+                                self.count = self.time_countdown_start
+                                temp_value = 1
+                            if self.midgame_start is True:
+                                self.midgame_start = False
+                                self.points_scoring = False
+                                self.countdown = self.cooldown_start
+                                temp_value = 1
+                            if temp_value == 1:
+                                break
                             for a in range(4): # goes through each value from 0-3
                                 if i == self.keypress_list[a] or i == self.keypress_list[a+4]:
                                 # ^ if the user pressed key is equal to 2 values in keypress list
@@ -322,6 +424,8 @@ class App:
                                                 self.stratagemList_hand_images.pop(0)
                                                 self.stratagemList_hand_reset = self.stratagemList_ci_hand[0].copy() # sets the reset hand to the new code
                                                 self.time_countdown += self.time_increase
+                                                if self.time_countdown > self.time_countdown_start:
+                                                    self.time_countdown = self.time_countdown_start
                                                 break
                                             except IndexError:
                                                 SAC = 0 # stratagem_amount_count
@@ -334,23 +438,49 @@ class App:
                                                         # ^ grabs a random stratagem image code list and adds it to the stratagem list code images list
                                                         # A random dict/variable in stratagems and grabs the "codeImageList" and adds it to another list which is the playing hand
                                                         SAC += 1 # adds 1 to the count to indicated another has been added
+
                                                     else:
                                                         self.stratagemList_hand_reset = self.stratagemList_ci_hand[0].copy() # sets the reset hand as the hand at the start
                                                         self.round += 1
-                                                        # new stratagem list /round
+                                                        self.points_scoring = True
+                                                        # calculates the scores for the round
+                                                        self.stratagem_completion_value = str(self.mode_amount * 20)
+                                                        self.time_bonus_value = str(int(self.time_countdown/10))
+                                                        if self.perfection_track is True:
+                                                            self.perfect_multi_value = "2.0x"
+                                                            self.perfect_multi_colour = self.colour
+                                                            pmv = 2
+                                                        elif self.perfection_track is False:
+                                                            self.perfect_multi_value = "0"
+                                                            self.perfect_multi_colour = (224, 0, 0)
+                                                            pmv = 1
+                                                        else:
+                                                            self.perfect_multi_value = "1.0x"
+                                                        self.round_multi_value = str(1 + ((self.round-2)/10)) + "x"
+                                                        rmv = 1 + ((self.round-2)/10)
+                                                        self.total_score_value = int((int(self.stratagem_completion_value) + int(self.time_countdown/10))*pmv*rmv)
+                                                        self.score += self.total_score_value
+                                                        self.score_value = str(int(self.score))
                                                         break
 
 
                                     else: # if the input is not the correct one 
                                         self.code_completion = -1 # resets progress
-            if self.game_start_screen is False:
+                                        self.perfection_track = False
+            if self.game_start_screen is True:
                 self.starting_game()
-            elif self.game_start_screen is True and self.game_starting_value is True:
+                self.perfection_track = True
+            elif self.points_scoring is True:
+                self.score_count()
+                self.game_starting_value = True
+                self.midgame_start = True
+                self.time_countdown = self.time_countdown_start
+            elif self.game_start_screen is False and self.game_starting_value is True or self.midgame_start is False and self.game_starting_value is True:
                 self.game_starting()
-                print("test")
             else:
                 self.code_image_display_active(self.code_completion) # displays code image function
                 self.timer_countdown()
+
 
             self.on_loop()
             self.on_render()
