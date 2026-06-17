@@ -76,8 +76,8 @@ class App:
         self.time_increase = 1.5 * self.fps
 
         self.game_starting_value = True
-        self.cooldown_start = 180
-        self.countdown = 180
+        self.cooldown_start = 3 * self.fps
+        self.countdown = 3 * self.fps
         self.game_start_screen = True
         self.midgame_start = False
         self.game_play = False
@@ -87,6 +87,11 @@ class App:
         self.score_adder = True
         self.total_score_value = 0
         self.key_allow = False
+        self.display_score_time = 180
+        self.display_score_time_start = 180
+        self.score_display_list = []
+        self.keypress_game_start = False
+
     def on_init(self):
         pygame.init()
         self.stratagems = (ESR, EA, ECB, ESS, ENA, E110RP, E500B, OPS, OGB, OGS, O120HEB, OAS, OSS, OEMSS, O380HEB, OWB, OL, ONB, ORS) # Stratagem codes
@@ -311,8 +316,6 @@ class App:
         score_str = "Total Score"
         next_round_str = "Press any stratagem input to start!"
 
-
-
         #converting values into pygame text
         score_points_title = self.titlefonth2.render(score_points_title_str, True, (255, 255, 255))
         stratagem_completion_text = self.fontp2.render(stratagem_completion_text_str, True, self.colour)
@@ -340,37 +343,42 @@ class App:
         total_score_value_text = self.fontp2.render(str(self.total_score_value), True, (255, 255, 255))
         score_display_value_text = self.fontp2.render(self.score_value, True, (255, 255, 255))
 
-        DFT = 80
-        # Make them pop out eventually
         self.display.blit(score_points_title, ((self.displayWidth - cptWidth)/2, 70))
-        self.display.blit(stratagem_completion_text, (150, DFT + cptLength))
-        DFT += 15
-        self.display.blit(time_bonus_text, (150, DFT + cptLength + sctLength))
-        DFT += 15
-        self.display.blit(perfect_multi_text, (150, DFT + cptLength + sctLength + tbtLength))
-        DFT += 15
-        self.display.blit(round_multi_text, (150, DFT + cptLength + sctLength + tbtLength + pmtLength))
-        DFT += 15
-        self.display.blit(total_score_text, (150, DFT + cptLength + sctLength + tbtLength + pmtLength + rmtLength))
-        DFT += 15
-        self.display.blit(score_text, (150, DFT + cptLength + sctLength + tbtLength + pmtLength + rmtLength + tsLength))
-        DFT += 15
-        nr_sidespace = (self.displayWidth - nrWidth)/2
-        self.display.blit(next_round_text, (nr_sidespace, DFT + cptLength + sctLength + tbtLength + pmtLength + rmtLength + tsLength + sdLength))
+        if self.display_score_time == 180:
+            self.score_display_list.append(stratagem_completion_text)
+            self.score_display_list.append(stratagem_completion_value_text)
+        elif self.display_score_time == 150:
+            self.score_display_list.append(time_bonus_text)
+            self.score_display_list.append(time_bonus_value_text)
+        elif self.display_score_time == 120:
+            self.score_display_list.append(perfect_multi_text)
+            self.score_display_list.append(perfect_multi_value_text)
+        elif self.display_score_time == 90:
+            self.score_display_list.append(round_multi_text)
+            self.score_display_list.append(round_multi_value_text)
+        elif self.display_score_time == 60:
+            self.score_display_list.append(total_score_text)
+            self.score_display_list.append(total_score_value_text)
+        elif self.display_score_time == 30:
+            self.score_display_list.append(score_text)
+            self.score_display_list.append(score_display_value_text)
+            self.score_display_list.append(next_round_text)
 
-        DFT = 80
-
-        self.display.blit(stratagem_completion_value_text, (self.displayWidth - 250, DFT + cptLength))
-        DFT += 15
-        self.display.blit(time_bonus_value_text, (self.displayWidth - 250, DFT + cptLength + sctLength))
-        DFT += 15
-        self.display.blit(perfect_multi_value_text, (self.displayWidth - 250, DFT + cptLength + sctLength + tbtLength))
-        DFT += 15
-        self.display.blit(round_multi_value_text, (self.displayWidth - 250, DFT + cptLength + sctLength + tbtLength + pmtLength))
-        DFT += 15
-        self.display.blit(total_score_value_text, (self.displayWidth - 250, DFT + cptLength + sctLength + tbtLength + pmtLength + rmtLength))
-        DFT += 15
-        self.display.blit(score_display_value_text, (self.displayWidth - 250, DFT + cptLength + sctLength + tbtLength + pmtLength + rmtLength + tsLength))
+        display_text_length = (cptLength, sctLength, tbtLength, pmtLength, rmtLength, tsLength, sdLength)
+        DFT = 65
+        DTL = 0
+        for index, i in enumerate(self.score_display_list):
+            if index % 2 == 0:
+                DTL += display_text_length[int(index/2)]
+                DFT += 15
+                y = DFT + DTL
+                if index == 12:
+                    self.display.blit(i, ((self.displayWidth-nrWidth)/2, y))
+                    self.midgame_start = True
+                else:
+                    self.display.blit(i, (150, y))
+                    self.display.blit(self.score_display_list[index+1], (self.displayWidth - 250, y))
+        self.display_score_time -= 1
 
     def on_event(self, event):
         if event.type == pygame.QUIT: # if the game is exitted out of
@@ -404,9 +412,8 @@ class App:
                                 self.points_scoring = False
                                 self.countdown = self.cooldown_start
                                 temp_value = 1
-                            if not self.key_allow:
-                                print("no")
-                                break
+                            if self.key_allow is False:
+                                temp_value = 1
                             if temp_value == 1:
                                 break
                             for a in range(4): # goes through each value from 0-3
@@ -416,7 +423,6 @@ class App:
                                     # ^ if a + 1 (range index that is equal to the keypress +1 to be aligned with the code) equals  the first digit in the code (the first code) 
                                         self.code_completion += 1 # adds one to code completion counter
                                         self.completion_tracker = False
-                                        print("correct")
                                         if self.code_completion +1 == self.stratagemList_hand[0]["length"]:
                                         # ^ if the completion index (the index of the completed code image) is more than length (compels and entire code) it grabs a new code by removing the first 
                                             try:
@@ -445,6 +451,9 @@ class App:
                                                         self.stratagemList_hand_reset = self.stratagemList_ci_hand[0].copy() # sets the reset hand as the hand at the start
                                                         self.round += 1
                                                         self.points_scoring = True
+                                                        self.time_countdown += self.time_increase
+                                                        if self.time_countdown > self.time_countdown_start:
+                                                            self.time_countdown = self.time_countdown_start
                                                         # calculates the scores for the round
                                                         self.stratagem_completion_value = str(self.mode_amount * 20)
                                                         self.time_bonus_value = str(int(self.time_countdown/10))
@@ -474,18 +483,21 @@ class App:
                 self.perfection_track = True
             elif self.points_scoring is True:
                 self.score_count()
+                self.key_allow = False
                 self.game_starting_value = True
-                self.midgame_start = True
                 self.time_countdown = self.time_countdown_start
-                self.perfection_track = True
             elif self.game_start_screen is False and self.game_starting_value is True or self.midgame_start is False and self.game_starting_value is True:
                 self.key_allow = False
+                self.perfection_track = True
                 self.game_starting()
             else:
                 self.key_allow = True
                 self.code_image_display_active(self.code_completion) # displays code image function
                 self.timer_countdown()
-
+                self.score_display_list = []
+                self.display_score_time = self.display_score_time_start
+                self.midgame_start = False
+                print(self.time_countdown)
 
             self.on_loop()
             self.on_render()
