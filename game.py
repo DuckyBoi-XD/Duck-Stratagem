@@ -92,6 +92,9 @@ class App:
         self.score_display_list = []
         self.keypress_game_start = False
 
+        self.high_scores = [5, 2, 9]
+        self.end_game = False
+
     def on_init(self):
         pygame.init()
         self.stratagems = (ESR, EA, ECB, ESS, ENA, E110RP, E500B, OPS, OGB, OGS, O120HEB, OAS, OSS, OEMSS, O380HEB, OWB, OL, ONB, ORS) # Stratagem codes
@@ -380,6 +383,59 @@ class App:
                     self.display.blit(self.score_display_list[index+1], (self.displayWidth - 250, y))
         self.display_score_time -= 1
 
+    def end_screen(self):
+        pygame.draw.rect(self.display, (255, 255, 255), (0, 40, self.displayWidth, 10), width=0, border_radius=0)
+        pygame.draw.rect(self.display, (255, 255, 255), (0, self.displayHeight - 50, self.displayWidth, 10), width=0, border_radius=0)
+
+        self.high_scores.sort()
+
+        end_screen_title_str = "GAME OVER"
+        high_score_text_str = "High Score"
+        top_high_score_value_str = str(self.high_scores[0])
+        mid_high_score_value_str = str(self.high_scores[1])
+        bottom_high_score_value_str = str(self.high_scores[2])
+        score_text_str = "Score"
+        score_value_str = str(int(self.score))
+        new_game_text_str = "Pres any input stratagem to start a new game"
+
+        end_screen_title = self.titlefonth2.render(end_screen_title_str, True, (255, 255, 255))
+        high_score_text = self.fontp2.render(high_score_text_str, True, self.colour)
+        top_high_score_value = self.fontp2.render(top_high_score_value_str, True, (255, 255, 255))
+        mid_high_score_value = self.fontp2.render(mid_high_score_value_str, True, (255, 255, 255))
+        bottom_high_score_value = self.fontp2.render(bottom_high_score_value_str, True, (255, 255, 255))
+        score_text = self.fontp2.render(score_text_str, True, self.colour)
+        score_value = self.fontp2.render(score_value_str, True, (255, 255, 255))
+        new_game_text = self.fontp2.render(new_game_text_str, True, self.colour)
+
+        estWidth, estLength = self.titlefont.size(end_screen_title_str)
+        hstWidth, hstLength = self.fontp2.size(high_score_text_str)
+        thsvWidth, thsvLength = self.fontp2.size(top_high_score_value_str)
+        mhsvWidth, mhsvLength = self.fontp2.size(mid_high_score_value_str)
+        bhsvWidth, bhsvLength = self.fontp2.size(bottom_high_score_value_str)
+        stWidth, stLength = self.fontp2.size(score_text_str)
+        svWidth, svLength = self.fontp2.size(score_value_str)
+        ngtWidth, ngtLength = self.fontp2.size(new_game_text_str)
+
+        high_score_list_width = [thsvWidth, mhsvWidth, bhsvWidth]
+        high_score_list = [top_high_score_value, mid_high_score_value, bottom_high_score_value]
+
+        DFT = 75
+        self.display.blit(end_screen_title, (390, DFT))
+        DFT += (10 + estLength)
+        self.display.blit(high_score_text, ((self.displayWidth-hstWidth)/2, DFT))
+        DFT += (3 + hstLength)
+
+        for index, i in enumerate(high_score_list):
+            self.display.blit(i, ((self.displayWidth-high_score_list_width[index])/2, DFT))
+            DFT += (3 + thsvLength)
+
+        DFT += 10
+        self.display.blit(score_text, ((self.displayWidth-stWidth)/2, DFT))
+        DFT += (5 + stLength)
+        self.display.blit(score_value, ((self.displayWidth-svWidth)/2, DFT))
+        DFT += (15 + svLength)
+        self.display.blit(new_game_text, ((self.displayWidth-ngtWidth)/2, (self.displayHeight-100)))
+
     def on_event(self, event):
         if event.type == pygame.QUIT: # if the game is exitted out of
             self._running = False # sets var to false
@@ -402,19 +458,21 @@ class App:
                     for i in self.keypress_list: # for every value in the keypress list (key presses like wasd and arrow keys)
                         check_code_index = self.code_completion + 1 # creates variable of check code index
                         if event.key == i: # if the event key is one of the values in keypress (doesn't active if its a random key)
-                            temp_value = 0
+                            break_value = 0
+                            if self.end_game:
+                                break
                             if self.game_start_screen is True:
                                 self.game_start_screen = False
                                 self.count = self.time_countdown_start
-                                temp_value = 1
+                                break_value = 1
                             if self.midgame_start is True:
                                 self.midgame_start = False
                                 self.points_scoring = False
                                 self.countdown = self.cooldown_start
-                                temp_value = 1
+                                break_value = 1
                             if self.key_allow is False:
-                                temp_value = 1
-                            if temp_value == 1:
+                                break_value = 1
+                            if break_value == 1:
                                 break
                             for a in range(4): # goes through each value from 0-3
                                 if i == self.keypress_list[a] or i == self.keypress_list[a+4]:
@@ -490,14 +548,18 @@ class App:
                 self.key_allow = False
                 self.perfection_track = True
                 self.game_starting()
+            elif self.end_game:
+                self.end_screen()
             else:
                 self.key_allow = True
                 self.code_image_display_active(self.code_completion) # displays code image function
                 self.timer_countdown()
                 self.score_display_list = []
+                self.end_display_list_width = []
                 self.display_score_time = self.display_score_time_start
                 self.midgame_start = False
-                print(self.time_countdown)
+                if self.time_countdown <= 0:
+                    self.end_game = True
 
             self.on_loop()
             self.on_render()
