@@ -398,7 +398,7 @@ class App:
         score_value_str = str(int(self.score))
         new_game_text_str = "Pres any input stratagem to start a new game"
 
-        end_screen_title = self.titlefont.render(end_screen_title_str, True, (255, 255, 255))
+        end_screen_title = self.titlefont.render(end_screen_title_str, True, self.perfect_multi_colour)
         high_score_text = self.font.render(high_score_text_str, True, self.colour)
         top_high_score_value = self.fontp2.render(top_high_score_value_str, True, (255, 255, 255))
         mid_high_score_value = self.fontp2.render(mid_high_score_value_str, True, (255, 255, 255))
