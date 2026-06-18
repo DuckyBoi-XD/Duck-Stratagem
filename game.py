@@ -398,30 +398,30 @@ class App:
         score_value_str = str(int(self.score))
         new_game_text_str = "Pres any input stratagem to start a new game"
 
-        end_screen_title = self.titlefonth2.render(end_screen_title_str, True, (255, 255, 255))
-        high_score_text = self.fontp2.render(high_score_text_str, True, self.colour)
+        end_screen_title = self.titlefont.render(end_screen_title_str, True, (255, 255, 255))
+        high_score_text = self.font.render(high_score_text_str, True, self.colour)
         top_high_score_value = self.fontp2.render(top_high_score_value_str, True, (255, 255, 255))
         mid_high_score_value = self.fontp2.render(mid_high_score_value_str, True, (255, 255, 255))
         bottom_high_score_value = self.fontp2.render(bottom_high_score_value_str, True, (255, 255, 255))
-        score_text = self.fontp2.render(score_text_str, True, self.colour)
+        score_text = self.font.render(score_text_str, True, self.colour)
         score_value = self.fontp2.render(score_value_str, True, (255, 255, 255))
-        new_game_text = self.fontp2.render(new_game_text_str, True, self.colour)
+        new_game_text = self.font.render(new_game_text_str, True, self.colour)
 
         estWidth, estLength = self.titlefont.size(end_screen_title_str)
-        hstWidth, hstLength = self.fontp2.size(high_score_text_str)
+        hstWidth, hstLength = self.font.size(high_score_text_str)
         thsvWidth, thsvLength = self.fontp2.size(top_high_score_value_str)
         mhsvWidth, mhsvLength = self.fontp2.size(mid_high_score_value_str)
         bhsvWidth, bhsvLength = self.fontp2.size(bottom_high_score_value_str)
-        stWidth, stLength = self.fontp2.size(score_text_str)
+        stWidth, stLength = self.font.size(score_text_str)
         svWidth, svLength = self.fontp2.size(score_value_str)
-        ngtWidth, ngtLength = self.fontp2.size(new_game_text_str)
+        ngtWidth, ngtLength = self.font.size(new_game_text_str)
 
         high_score_list_width = [thsvWidth, mhsvWidth, bhsvWidth]
         high_score_list = [top_high_score_value, mid_high_score_value, bottom_high_score_value]
 
-        DFT = 75
-        self.display.blit(end_screen_title, (390, DFT))
-        DFT += (10 + estLength)
+        DFT = 80
+        self.display.blit(end_screen_title, ((self.displayWidth-estWidth)/2, DFT))
+        DFT += (20 + estLength)
         self.display.blit(high_score_text, ((self.displayWidth-hstWidth)/2, DFT))
         DFT += (3 + hstLength)
 
