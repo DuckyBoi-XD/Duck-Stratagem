@@ -94,6 +94,7 @@ class App:
 
         self.high_scores = [5, 2, 9]
         self.end_game = False
+        self.round_stratagem_score = 0
 
     def on_init(self):
         pygame.init()
@@ -490,10 +491,13 @@ class App:
                                                 self.stratagemList_hand_images.pop(0)
                                                 self.stratagemList_hand_reset = self.stratagemList_ci_hand[0].copy() # sets the reset hand to the new code
                                                 self.time_countdown += self.time_increase
+                                                self.score += 20
+                                                 
                                                 if self.time_countdown > self.time_countdown_start:
                                                     self.time_countdown = self.time_countdown_start
                                                 break
                                             except IndexError:
+                                                self.score += 20
                                                 SAC = 0 # stratagem_amount_count
                                                 while True: # creates a list of stratagems for the user to complete
                                                     if SAC < self.mode_amount: # checks if it has created enough codes
@@ -528,7 +532,7 @@ class App:
                                                         self.round_multi_value = str(1 + ((self.round-2)/10)) + "x"
                                                         rmv = 1 + ((self.round-2)/10)
                                                         self.total_score_value = int((int(self.stratagem_completion_value) + int(self.time_countdown/10))*pmv*rmv)
-                                                        self.score += self.total_score_value
+                                                        self.score += self.total_score_value - int(self.stratagem_completion_value)
                                                         self.score_value = str(int(self.score))
                                                         break
 
