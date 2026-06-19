@@ -96,6 +96,10 @@ class App:
         self.high_scores.sort(reverse=True)
         self.end_game = False
         self.round_stratagem_score = 0
+        self.end_game_time = 120
+        self.end_game_prevention = False
+        self.end_game_start = False
+        self.end_game_input_checker = False
 
     def on_init(self):
         pygame.init()
@@ -396,7 +400,7 @@ class App:
         bottom_high_score_value_str = "3. " + str(self.high_scores[2])
         score_text_str = "Score"
         score_value_str = str(int(self.score))
-        new_game_text_str = "Pres any input stratagem to start a new game"
+        new_game_text_str = "Press any input stratagem to start a new game"
 
         end_screen_title = self.titlefont.render(end_screen_title_str, True, self.red_colour)
         high_score_text = self.font.render(high_score_text_str, True, self.colour)
@@ -430,7 +434,12 @@ class App:
         self.display.blit(score_text, ((self.displayWidth-stWidth)/2, DFT))
         DFT += (5 + stLength)
         self.display.blit(score_value, ((self.displayWidth-svWidth)/2, DFT))
-        self.display.blit(new_game_text, ((self.displayWidth-ngtWidth)/2, (self.displayHeight-100)))
+        if self.end_game_time <= 0:
+            self.display.blit(new_game_text, ((self.displayWidth-ngtWidth)/2, (self.displayHeight-100)))
+            self.end_game_prevention = False
+            self.end_game_input_checker = True
+        if self.end_game_time > 0:
+            self.end_game_time -= 1
 
     def on_event(self, event):
         if event.type == pygame.QUIT: # if the game is exitted out of
@@ -455,7 +464,15 @@ class App:
                         check_code_index = self.code_completion + 1 # creates variable of check code index
                         if event.key == i: # if the event key is one of the values in keypress (doesn't active if its a random key)
                             break_value = 0
-                            if self.end_game:
+                            if self.end_game_prevention is True:
+                                break
+                            if self.end_game_input_checker is True:
+                                self.end_game_input_checker = False
+                                self.end_game_start = True
+                                self.end_game_time = 120
+                                self.score = 0
+                                self.end_game = False
+                                self.time_countdown = self.time_countdown_start
                                 break
                             if self.game_start_screen is True:
                                 self.game_start_screen = False
@@ -537,9 +554,15 @@ class App:
                                     else: # if the input is not the correct one 
                                         self.code_completion = -1 # resets progress
                                         self.perfection_track = False
+            if self.end_game_start is True:
+                self.end_game_start = False
+                self.game_start_screen = True
+                self.end_game = False
             if self.game_start_screen is True:
                 self.starting_game()
                 self.perfection_track = True
+                self.game_starting_value = True
+                self.countdown = 180
             elif self.points_scoring is True:
                 self.score_count()
                 self.key_allow = False
@@ -564,6 +587,7 @@ class App:
                     self.high_scores.append(self.score)
                     self.high_scores.sort(reverse=True)
                     self.high_scores.pop(3)
+                    self.end_game_prevention = True
                             
             self.on_loop()
             self.on_render()
