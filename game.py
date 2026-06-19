@@ -101,6 +101,8 @@ class App:
         self.end_game_start = False
         self.end_game_input_checker = False
 
+        self.pmvextra = 0
+
     def on_init(self):
         pygame.init()
         self.stratagems = (ESR, EA, ECB, ESS, ENA, E110RP, E500B, OPS, OGB, OGS, O120HEB, OAS, OSS, OEMSS, O380HEB, OWB, OL, ONB, ORS) # Stratagem codes
@@ -533,10 +535,13 @@ class App:
                                                         # calculates the scores for the round
                                                         self.stratagem_completion_value = str((self.mode_amount-1) * 20)
                                                         self.time_bonus_value = str(int(self.time_countdown/10))
+                                                        pmv = 2
                                                         if self.perfection_track is True:
-                                                            self.perfect_multi_value = "2.0x"
+                                                            if (self.round-1) % 5 == 0:
+                                                                self.pmvextra = ((self.round-1)/5) * 0.5
+                                                            pmv += self.pmvextra
+                                                            self.perfect_multi_value = str(float(pmv)) + "x"
                                                             self.perfect_multi_colour = self.colour
-                                                            pmv = 2
                                                         elif self.perfection_track is False:
                                                             self.perfect_multi_value = "1.0x"
                                                             self.perfect_multi_colour = self.red_colour
