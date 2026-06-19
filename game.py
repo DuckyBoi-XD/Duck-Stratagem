@@ -341,7 +341,7 @@ class App:
         self.stratagemList_hand_images[0] = image
             
         '''displays the image of the stratagem'''
-        for i in range(len(self.stratagemList_hand_images[0:6])): # the rangle length of the hand images
+        for i in range(len(self.stratagemList_hand_images[0:5])): # the rangle length of the hand images
             if i == 0: # if the value is the second one in the list
                 self.tcpin = (self.displayWidth-self.stratagem_imge_list_width)/2
                 self.display.blit((self.stratagemList_hand_images[i]), (self.tcpin, 75)) # prints main images
