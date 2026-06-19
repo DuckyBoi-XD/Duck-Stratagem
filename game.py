@@ -41,6 +41,7 @@ class App:
 
         self.fps = 60
         self.colour = (254, 254, 17)
+        self.red_colour = (224, 0, 0)
 
         self._running = True # sets var to true when game runs
         self._display_surf = None # def the var for display
@@ -50,7 +51,6 @@ class App:
         self.stratagemList_hand = [] # list of the stratagems in the hand
         self.stratagemList_hand_reset = [] # the current code image used to reset the progress
         self.stratagemList_hand_images = [] # list of the stratagem pictures
-        self.mode = None # how hard/many stratagems
         self.mode_amount = 5 # temp mode ammount (ammount of stratagems in a hand)
         self.round = 1
         self.score = 0
@@ -93,6 +93,7 @@ class App:
         self.keypress_game_start = False
 
         self.high_scores = [5, 2, 9]
+        self.high_scores.sort(reverse=True)
         self.end_game = False
         self.round_stratagem_score = 0
 
@@ -388,18 +389,16 @@ class App:
         pygame.draw.rect(self.display, (255, 255, 255), (0, 40, self.displayWidth, 10), width=0, border_radius=0)
         pygame.draw.rect(self.display, (255, 255, 255), (0, self.displayHeight - 50, self.displayWidth, 10), width=0, border_radius=0)
 
-        self.high_scores.sort()
-
         end_screen_title_str = "GAME OVER"
         high_score_text_str = "High Score"
-        top_high_score_value_str = str(self.high_scores[0])
-        mid_high_score_value_str = str(self.high_scores[1])
-        bottom_high_score_value_str = str(self.high_scores[2])
+        top_high_score_value_str = "1. " + str(self.high_scores[0])
+        mid_high_score_value_str = "2. " + str(self.high_scores[1])
+        bottom_high_score_value_str = "3. " + str(self.high_scores[2])
         score_text_str = "Score"
         score_value_str = str(int(self.score))
         new_game_text_str = "Pres any input stratagem to start a new game"
 
-        end_screen_title = self.titlefont.render(end_screen_title_str, True, self.perfect_multi_colour)
+        end_screen_title = self.titlefont.render(end_screen_title_str, True, self.red_colour)
         high_score_text = self.font.render(high_score_text_str, True, self.colour)
         top_high_score_value = self.fontp2.render(top_high_score_value_str, True, (255, 255, 255))
         mid_high_score_value = self.fontp2.render(mid_high_score_value_str, True, (255, 255, 255))
@@ -411,13 +410,10 @@ class App:
         estWidth, estLength = self.titlefont.size(end_screen_title_str)
         hstWidth, hstLength = self.font.size(high_score_text_str)
         thsvWidth, thsvLength = self.fontp2.size(top_high_score_value_str)
-        mhsvWidth, mhsvLength = self.fontp2.size(mid_high_score_value_str)
-        bhsvWidth, bhsvLength = self.fontp2.size(bottom_high_score_value_str)
         stWidth, stLength = self.font.size(score_text_str)
         svWidth, svLength = self.fontp2.size(score_value_str)
         ngtWidth, ngtLength = self.font.size(new_game_text_str)
 
-        high_score_list_width = [thsvWidth, mhsvWidth, bhsvWidth]
         high_score_list = [top_high_score_value, mid_high_score_value, bottom_high_score_value]
 
         DFT = 80
@@ -426,15 +422,14 @@ class App:
         self.display.blit(high_score_text, ((self.displayWidth-hstWidth)/2, DFT))
         DFT += (3 + hstLength)
 
-        for index, i in enumerate(high_score_list):
-            self.display.blit(i, ((self.displayWidth-high_score_list_width[index])/2, DFT))
+        for i in high_score_list:
+            self.display.blit(i, ((self.displayWidth-hstWidth)/2, DFT))
             DFT += (3 + thsvLength)
 
-        DFT += 10
+        DFT += 20
         self.display.blit(score_text, ((self.displayWidth-stWidth)/2, DFT))
         DFT += (5 + stLength)
         self.display.blit(score_value, ((self.displayWidth-svWidth)/2, DFT))
-        DFT += (15 + svLength)
         self.display.blit(new_game_text, ((self.displayWidth-ngtWidth)/2, (self.displayHeight-100)))
 
     def on_event(self, event):
@@ -499,6 +494,9 @@ class App:
                                             except IndexError:
                                                 self.score += 20
                                                 SAC = 0 # stratagem_amount_count
+                                                self.mode_amount += 1
+                                                if self.mode_amount % 10 == 0:
+                                                    self.time_increase -= 5
                                                 while True: # creates a list of stratagems for the user to complete
                                                     if SAC < self.mode_amount: # checks if it has created enough codes
                                                         temp_stratagem = random.choice(self.stratagems)
@@ -508,8 +506,7 @@ class App:
                                                         # ^ grabs a random stratagem image code list and adds it to the stratagem list code images list
                                                         # A random dict/variable in stratagems and grabs the "codeImageList" and adds it to another list which is the playing hand
                                                         SAC += 1 # adds 1 to the count to indicated another has been added
-
-                                                    else:
+                                                    else:   
                                                         self.stratagemList_hand_reset = self.stratagemList_ci_hand[0].copy() # sets the reset hand as the hand at the start
                                                         self.round += 1
                                                         self.points_scoring = True
@@ -517,7 +514,7 @@ class App:
                                                         if self.time_countdown > self.time_countdown_start:
                                                             self.time_countdown = self.time_countdown_start
                                                         # calculates the scores for the round
-                                                        self.stratagem_completion_value = str(self.mode_amount * 20)
+                                                        self.stratagem_completion_value = str((self.mode_amount-1) * 20)
                                                         self.time_bonus_value = str(int(self.time_countdown/10))
                                                         if self.perfection_track is True:
                                                             self.perfect_multi_value = "2.0x"
@@ -525,7 +522,7 @@ class App:
                                                             pmv = 2
                                                         elif self.perfection_track is False:
                                                             self.perfect_multi_value = "1.0x"
-                                                            self.perfect_multi_colour = (224, 0, 0)
+                                                            self.perfect_multi_colour = self.red_colour
                                                             pmv = 1
                                                         else:
                                                             self.perfect_multi_value = "1.0x"
@@ -564,7 +561,10 @@ class App:
                 self.midgame_start = False
                 if self.time_countdown <= 0:
                     self.end_game = True
-
+                    self.high_scores.append(self.score)
+                    self.high_scores.sort(reverse=True)
+                    self.high_scores.pop(3)
+                            
             self.on_loop()
             self.on_render()
             pygame.display.flip() # updates display
