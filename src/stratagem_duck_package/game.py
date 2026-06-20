@@ -115,6 +115,34 @@ OL = {"name": "Orbital Laser", "codeName": "OL", "code": "23123"}
 ONB = {"name": "Orbital Napalm Barrage", "codeName": "ONB", "code": "223421"}
 ORS = {"name": "Orbital Railcannon Strike", "codeName": "ORS", "code": "21332"}
 
+## Emplacements
+APM = {"name": "MD-6 Anti-Personnel Minefield", "codeName": "APM", "code": "3142"}
+IM = {"name": "MD-I4 Incendiary Mines", "codeName": "IM", "code": "3133"}
+ATM = {"name": "MD-17 Anti-Tank Mines", "codeName": "ATM", "code": "3144"}
+GB = {"name": "E/GL-21 Grenadier Battlement", "codeName": "GB", "code": "32324"}
+GM = {"name": "MD-8 Gas Mines", "codeName": "GM", "code": "3134"}
+SGR = {"name": "FX-12 Shield Generator Relay", "codeName": "SGR", "code": "3314242"}
+HMGE = {"name": "E/MG-101 HMG Emplacement", "codeName": "HMGE", "code": "341422"}
+ATE = {"name": "E/AT-12 Anti-Tank Emplacement", "codeName": "ATE", "code": "3412222"}
+
+## Sentries
+MGS = {"name": "A/MG-43 Machine Gun Sentry", "codeName": "MGS", "code": "31221"}
+GS = {"name": "A/G-16 Gatling Sentry", "codeName": "GS", "code": "3124"}
+AS = {"name": "A/AC-8 Autocannon Sentry", "codeName": "AS", "code": "312141"}
+RS = {"name": "A/MLS-4X Rocket Sentry", "codeName": "RS", "code": "31224"}
+MS = {"name": "A/M-12 Mortar Sentry", "codeName": "MS", "code": "31223"}
+GMS = {"name": "A/GM-17 Gas Mortar Sentry", "codeName": "GMS", "code": "312313"}
+LS = {"name": "A/LAS-98 Laser Sentry", "codeName": "LS", "code": "3123132"}
+EMSMS = {"name": "A/M-23 EMS Mortar Sentry", "codeName": "EMSMS", "code": "31232"}
+FS = {"name": "A/FLAM-40 Flame Sentry", "codeName": "FS", "code": "3123133"}
+TT = {"name": "A/ARC-3 Tesla Tower", "codeName": "TT", "code": "312142"}
+
+## Ship
+RSP = {"name": "Resupply", "codeName": "RSP", "code": "3312"}
+SOS = {"name": "SoS Beacon", "codeName": "SOS", "code": "1321"}
+RE = {"name": "Reinforce", "codeName": "RE", "code": "12341"}
+ER = {"name": "Eagle Rearm", "codeName": "ER", "code": "11212"}
+
 display_bg = pygame.Color(0, 0, 0) # background colour for pygame display
 class App:
     def __init__(self):
@@ -122,10 +150,15 @@ class App:
                             "assets/arrows/arrow_up_bold.png", "assets/arrows/arrow_right_bold.png", "assets/arrows/arrow_down_bold.png", "assets/arrows/arrow_left_bold.png") 
                             # ^ list of the names of arrow file
         self.image_names_var = ("arrow_up", "arrow_right", "arrow_down", "arrow_left", "arrow_up_bold", "arrow_right_bold", "arrow_down_bold", "Barrow_left_bold") # the variable name options
-        self.stratagem_image = ("assets/stratagempng/ESR.png", "assets/stratagempng/EA.png", "assets/stratagempng/ECB.png", "assets/stratagempng/ESS.png", "assets/stratagempng/ENA.png", 
-                            "assets/stratagempng/E110RP.png", "assets/stratagempng/E500B.png", "assets/stratagempng/OPS.png", "assets/stratagempng/OGB.png", "assets/stratagempng/OGS.png", 
-                            "assets/stratagempng/O120HEB.png", "assets/stratagempng/OAS.png", "assets/stratagempng/OSS.png", "assets/stratagempng/OEMSS.png", "assets/stratagempng/O380HEB.png", 
-                            "assets/stratagempng/OWB.png", "assets/stratagempng/OL.png", "assets/stratagempng/ONB.png", "assets/stratagempng/ORS.png") # list of the names of the file for the stratagem images
+        self.stratagem_image = ("assets/stratagempng/APM.png", "assets/stratagempng/AS.png", "assets/stratagempng/ATE.png", "assets/stratagempng/ATM.png", "assets/stratagempng/E110RP.png",
+                            "assets/stratagempng/E500B.png", "assets/stratagempng/EA.png", "assets/stratagempng/ECB.png", "assets/stratagempng/EMSMS.png", "assets/stratagempng/ENA.png",
+                            "assets/stratagempng/ER.png", "assets/stratagempng/ESR.png", "assets/stratagempng/ESS.png", "assets/stratagempng/FS.png", "assets/stratagempng/GB.png",
+                            "assets/stratagempng/GM.png", "assets/stratagempng/GMS.png", "assets/stratagempng/GS.png", "assets/stratagempng/HMGE.png", "assets/stratagempng/IM.png",
+                            "assets/stratagempng/LS.png", "assets/stratagempng/MGS.png", "assets/stratagempng/MS.png", "assets/stratagempng/O120HEB.png", "assets/stratagempng/O380HEB.png",
+                            "assets/stratagempng/OAS.png", "assets/stratagempng/OEMSS.png", "assets/stratagempng/OGB.png", "assets/stratagempng/OGS.png", "assets/stratagempng/OL.png",
+                            "assets/stratagempng/ONB.png", "assets/stratagempng/OPS.png", "assets/stratagempng/ORS.png", "assets/stratagempng/OSS.png", "assets/stratagempng/OWB.png",
+                            "assets/stratagempng/RE.png", "assets/stratagempng/RS.png", "assets/stratagempng/RSP.png", "assets/stratagempng/SGR.png", "assets/stratagempng/SOS.png",
+                            "assets/stratagempng/TT.png") # list of the names of the file for the stratagem images
         self.keypress_list = (pygame.K_w, pygame.K_d, pygame.K_s, pygame.K_a, pygame.K_UP, pygame.K_RIGHT, pygame.K_DOWN, pygame.K_LEFT)
         self.image_var_dict = {}
 
@@ -195,7 +228,7 @@ class App:
 
     def on_init(self):
         pygame.init()
-        self.stratagems = (ESR, EA, ECB, ESS, ENA, E110RP, E500B, OPS, OGB, OGS, O120HEB, OAS, OSS, OEMSS, O380HEB, OWB, OL, ONB, ORS) # Stratagem codes
+        self.stratagems = (APM, AS, ATE, ATM, E110RP, E500B, EA, ECB, EMSMS, ENA, ER, ESR, ESS, FS, GB, GM, GMS, GS, HMGE, IM, LS, MGS, MS, O120HEB, O380HEB, OAS, OEMSS, OGB, OGS, OL, ONB, OPS, ORS, OSS, OWB, RE, RS, RSP, SGR, SOS, TT) # Stratagem codes
         self.display = pygame.display.set_mode((self.displayWidth, self.displayHeight), pygame.HWSURFACE | pygame.DOUBLEBUF) # creates pygame window (size)
         self.font = pygame.font.Font("assets/font/font.ttf", 25) # font
         self.fontp2 = pygame.font.Font("assets/font/font.ttf", 20) # 2nd paragraphfont
