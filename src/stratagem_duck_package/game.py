@@ -230,10 +230,10 @@ class App:
         pygame.init()
         self.stratagems = (APM, AS, ATE, ATM, E110RP, E500B, EA, ECB, EMSMS, ENA, ER, ESR, ESS, FS, GB, GM, GMS, GS, HMGE, IM, LS, MGS, MS, O120HEB, O380HEB, OAS, OEMSS, OGB, OGS, OL, ONB, OPS, ORS, OSS, OWB, RE, RS, RSP, SGR, SOS, TT) # Stratagem codes
         self.display = pygame.display.set_mode((self.displayWidth, self.displayHeight), pygame.HWSURFACE | pygame.DOUBLEBUF) # creates pygame window (size)
-        self.font = pygame.font.Font("assets/font/font.ttf", 25) # font
-        self.fontp2 = pygame.font.Font("assets/font/font.ttf", 20) # 2nd paragraphfont
-        self.titlefont = pygame.font.Font("assets/font/titlefont.ttf", 30) # font for title
-        self.titlefonth2 = pygame.font.Font("assets/font/titlefont.ttf", 25) # 2nd font for title
+        self.font = pygame.font.Font("src/stratagem_duck_package/assets/font/font.ttf", 25) # font
+        self.fontp2 = pygame.font.Font("src/stratagem_duck_package/assets/font/font.ttf", 20) # 2nd paragraphfont
+        self.titlefont = pygame.font.Font("src/stratagem_duck_package/assets/font/titlefont.ttf", 30) # font for title
+        self.titlefonth2 = pygame.font.Font("src/stratagem_duck_package/assets/font/titlefont.ttf", 25) # 2nd font for title
 
         '''Images'''
         for i in range(len(self.image_names_var)): # find length of the list for each index

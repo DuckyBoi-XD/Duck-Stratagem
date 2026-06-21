@@ -3,13 +3,13 @@ requires = ["setuptools>=61.0"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "your-package-name"
+name = "duck-stratagem"
 version = "0.0.1"
-description = "Short description of your project"
+description = "The HELLDIVERS' 'Stratagem Hero' made with python, using pygame"
 readme = "README.md"
 requires-python = ">=3.8"
 authors = [
-  { name="Your Name" }
+  { name="Braeden Sy Tan" }
 ]
 
 dependencies = []
