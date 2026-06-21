@@ -156,7 +156,6 @@ class App:
                                      "ESR.png", "ESS.png", "FS.png", "GB.png", "GM.png", "GMS.png", "GS.png", "HMGE.png", "IM.png", "LS.png", "MGS.png", "MS.png", "O120HEB.png",
                                      "O380HEB.png", "OAS.png", "OEMSS.png", "OGB.png", "OGS.png", "OL.png", "ONB.png", "OPS.png", "ORS.png", "OSS.png", "OWB.png", "RE.png",
                                      "RS.png", "RSP.png", "SGR.png", "SOS.png", "TT.png") # list of the names of the file for the stratagem images
-        print(len(self.stratagem_image_name))
         for i in self.arrow_image_name:
             self.arrow_image.append("src/stratagem_duck_package/assets/arrows/"+i)
         for i in self.stratagem_image_name:
