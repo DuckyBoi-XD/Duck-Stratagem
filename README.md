@@ -73,3 +73,4 @@ Requirements:
 
 This is my first time using pygame, so the structure of the code will absolutely be wack.
 There also might be some miscalculations with the score where any feedback is appreciated.
+I also forgot to add sound effect so If I need to fix anything with this game, I'll probarly add it
