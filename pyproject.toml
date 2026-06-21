@@ -1,18 +1,34 @@
 [build-system]
-requires = ["setuptools>=61.0"]
+requires = ["setuptools>=61.0", "setuptools_scm[toml]>=6.2"]
 build-backend = "setuptools.build_meta"
 
 [project]
 name = "duck-stratagem"
-version = "0.0.1"
+dynamic = ["version"]
 description = "The HELLDIVERS' 'Stratagem Hero' made with python, using pygame"
 readme = "README.md"
 requires-python = ">=3.8"
+keywords = ["game", "HELLDIVERS 2", "pygame", "arcade"]
 authors = [
   { name="Braeden Sy Tan" }
 ]
-
+license = "GPL-3.0-or-later"
 dependencies = []
+
+[project.urls]
+Homepage = "https://github.com/DuckyBoi-XD/Duck-Stratagem"
+Issues = "https://github.com/DuckyBoi-XD/Duck-Stratagem/issues"
+
+[project.scripts]
+DS = "stratagem_duck_package.game:main"
+duck-stratagem = "stratagem_duck_package.game:main"
+play-DS = "stratagem_duck_package.game:main"
+play-duck-stratagem = "stratagem_duck_package.game:main"
 
 [tool.setuptools.packages.find]
 where = ["src"]
+
+[tool.setuptools_scm]
+version_scheme = "release-branch-semver"
+local_scheme = "no-local-version"
+tag_regex = "^(?:v)?(?P<version>\\d+\\.\\d+\\.\\d+)$"

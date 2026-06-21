@@ -746,6 +746,10 @@ class App:
             self.on_render()
             pygame.display.flip() # updates display
             self.display.fill((display_bg)) # sets displays colour
-if __name__ == "__main__":
+
+def main():
     theApp = App()
     theApp.on_execute()
+
+if __name__ == "__main__":
+    main()
