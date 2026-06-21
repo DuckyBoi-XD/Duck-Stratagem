@@ -5,6 +5,7 @@ import base64
 import os
 import codecs
 from pygame.locals import *
+from importlib import resources
 
 def to_binary_str(s):
     '''binary encoder'''
@@ -144,6 +145,8 @@ ER = {"name": "Eagle Rearm", "codeName": "ER", "code": "11212"}
 
 display_bg = pygame.Color(0, 0, 0) # background colour for pygame display
 class App:
+    def asset_path(self, folder, filename):
+        return resources.files("stratagem_duck_package.assets").joinpath(folder, filename)
     def __init__(self):
         self.arrow_image = []
         self.stratagem_images = []
@@ -157,9 +160,10 @@ class App:
                                      "O380HEB.png", "OAS.png", "OEMSS.png", "OGB.png", "OGS.png", "OL.png", "ONB.png", "OPS.png", "ORS.png", "OSS.png", "OWB.png", "RE.png",
                                      "RS.png", "RSP.png", "SGR.png", "SOS.png", "TT.png") # list of the names of the file for the stratagem images
         for i in self.arrow_image_name:
-            self.arrow_image.append("src/stratagem_duck_package/assets/arrows/"+i)
+            self.arrow_image.append(self.asset_path("arrows", i))
+
         for i in self.stratagem_image_name:
-            self.stratagem_images.append("src/stratagem_duck_package/assets/stratagempng/"+i)
+            self.stratagem_images.append(self.asset_path("stratagempng", i))
         self.keypress_list = (pygame.K_w, pygame.K_d, pygame.K_s, pygame.K_a, pygame.K_UP, pygame.K_RIGHT, pygame.K_DOWN, pygame.K_LEFT)
         self.image_var_dict = {}
 
@@ -231,10 +235,18 @@ class App:
         pygame.init()
         self.stratagems = (APM, AS, ATE, ATM, E110RP, E500B, EA, ECB, EMSMS, ENA, ER, ESR, ESS, FS, GB, GM, GMS, GS, HMGE, IM, LS, MGS, MS, O120HEB, O380HEB, OAS, OEMSS, OGB, OGS, OL, ONB, OPS, ORS, OSS, OWB, RE, RS, RSP, SGR, SOS, TT) # Stratagem codes
         self.display = pygame.display.set_mode((self.displayWidth, self.displayHeight), pygame.HWSURFACE | pygame.DOUBLEBUF) # creates pygame window (size)
-        self.font = pygame.font.Font("src/stratagem_duck_package/assets/font/font.ttf", 25) # font
-        self.fontp2 = pygame.font.Font("src/stratagem_duck_package/assets/font/font.ttf", 20) # 2nd paragraphfont
-        self.titlefont = pygame.font.Font("src/stratagem_duck_package/assets/font/titlefont.ttf", 30) # font for title
-        self.titlefonth2 = pygame.font.Font("src/stratagem_duck_package/assets/font/titlefont.ttf", 25) # 2nd font for title
+
+        with resources.path("stratagem_duck_package.assets.font", "font.ttf") as p:
+            self.font = pygame.font.Font(p, 25)
+
+        with resources.path("stratagem_duck_package.assets.font", "font.ttf") as p:
+            self.fontp2 = pygame.font.Font(p, 20)
+        
+        with resources.path("stratagem_duck_package.assets.font", "titlefont.ttf") as p:
+            self.titlefont = pygame.font.Font(p, 30)
+
+        with resources.path("stratagem_duck_package.assets.font", "titlefont.ttf") as p:
+            self.titlefonth2 = pygame.font.Font(p, 25)
 
         '''Images'''
         for i in range(len(self.image_names_var)): # find length of the list for each index
