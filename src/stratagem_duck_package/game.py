@@ -6,7 +6,6 @@ import os
 import codecs
 from pygame.locals import *
 
-
 def to_binary_str(s):
     '''binary encoder'''
     return ''.join(format(ord(c), '08b') for c in s)
@@ -146,19 +145,22 @@ ER = {"name": "Eagle Rearm", "codeName": "ER", "code": "11212"}
 display_bg = pygame.Color(0, 0, 0) # background colour for pygame display
 class App:
     def __init__(self):
-        self.image_names = ("assets/arrows/arrow_up.png", "assets/arrows/arrow_right.png", "assets/arrows/arrow_down.png", "assets/arrows/arrow_left.png", 
-                            "assets/arrows/arrow_up_bold.png", "assets/arrows/arrow_right_bold.png", "assets/arrows/arrow_down_bold.png", "assets/arrows/arrow_left_bold.png") 
-                            # ^ list of the names of arrow file
-        self.image_names_var = ("arrow_up", "arrow_right", "arrow_down", "arrow_left", "arrow_up_bold", "arrow_right_bold", "arrow_down_bold", "Barrow_left_bold") # the variable name options
-        self.stratagem_image = ("assets/stratagempng/APM.png", "assets/stratagempng/AS.png", "assets/stratagempng/ATE.png", "assets/stratagempng/ATM.png", "assets/stratagempng/E110RP.png",
-                            "assets/stratagempng/E500B.png", "assets/stratagempng/EA.png", "assets/stratagempng/ECB.png", "assets/stratagempng/EMSMS.png", "assets/stratagempng/ENA.png",
-                            "assets/stratagempng/ER.png", "assets/stratagempng/ESR.png", "assets/stratagempng/ESS.png", "assets/stratagempng/FS.png", "assets/stratagempng/GB.png",
-                            "assets/stratagempng/GM.png", "assets/stratagempng/GMS.png", "assets/stratagempng/GS.png", "assets/stratagempng/HMGE.png", "assets/stratagempng/IM.png",
-                            "assets/stratagempng/LS.png", "assets/stratagempng/MGS.png", "assets/stratagempng/MS.png", "assets/stratagempng/O120HEB.png", "assets/stratagempng/O380HEB.png",
-                            "assets/stratagempng/OAS.png", "assets/stratagempng/OEMSS.png", "assets/stratagempng/OGB.png", "assets/stratagempng/OGS.png", "assets/stratagempng/OL.png",
-                            "assets/stratagempng/ONB.png", "assets/stratagempng/OPS.png", "assets/stratagempng/ORS.png", "assets/stratagempng/OSS.png", "assets/stratagempng/OWB.png",
-                            "assets/stratagempng/RE.png", "assets/stratagempng/RS.png", "assets/stratagempng/RSP.png", "assets/stratagempng/SGR.png", "assets/stratagempng/SOS.png",
-                            "assets/stratagempng/TT.png") # list of the names of the file for the stratagem images
+        self.arrow_image = []
+        self.stratagem_images = []
+
+        self.arrow_image_name = ("arrow_up.png", "arrow_right.png", "arrow_down.png",
+                                "arrow_left.png", "arrow_up_bold.png", "arrow_right_bold.png",
+                                "arrow_down_bold.png", "arrow_left_bold.png") 
+        self.image_names_var = ("arrow_up", "arrow_right", "arrow_down", "arrow_left", "arrow_up_bold", "arrow_right_bold", "arrow_down_bold", "arrow_left_bold") # the variable name options
+        self.stratagem_image_name = ("APM.png", "AS.png", "ATE.png", "ATM.png", "EA.png", "ECB.png", "E110RP.png", "E500B.png", "EMSMS.png", "ENA.png", "ER.png",
+                                     "ESR.png", "ESS.png", "FS.png", "GB.png", "GM.png", "GMS.png", "GS.png", "HMGE.png", "IM.png", "LS.png", "MGS.png", "MS.png", "O120HEB.png",
+                                     "O380HEB.png", "OAS.png", "OEMSS.png", "OGB.png", "OGS.png", "OL.png", "ONB.png", "OPS.png", "ORS.png", "OSS.png", "OWB.png", "RE.png",
+                                     "RS.png", "RSP.png", "SGR.png", "SOS.png", "TT.png") # list of the names of the file for the stratagem images
+        print(len(self.stratagem_image_name))
+        for i in self.arrow_image_name:
+            self.arrow_image.append("src/stratagem_duck_package/assets/arrows/"+i)
+        for i in self.stratagem_image_name:
+            self.stratagem_images.append("src/stratagem_duck_package/assets/stratagempng/"+i)
         self.keypress_list = (pygame.K_w, pygame.K_d, pygame.K_s, pygame.K_a, pygame.K_UP, pygame.K_RIGHT, pygame.K_DOWN, pygame.K_LEFT)
         self.image_var_dict = {}
 
@@ -237,7 +239,7 @@ class App:
 
         '''Images'''
         for i in range(len(self.image_names_var)): # find length of the list for each index
-                image = pygame.transform.smoothscale(pygame.image.load(self.image_names[i]).convert_alpha(), (self.size_code_image, self.size_code_image))
+                image = pygame.transform.smoothscale(pygame.image.load(self.arrow_image[i]).convert_alpha(), (self.size_code_image, self.size_code_image))
                 # ^ creates an image by grabbing the image name with the same index in image_name (which should be the same direction)
                 self.image_var_dict[self.image_names_var[i]] = image 
                 # ^ adds a dict to the dict(image_var_dict) which the key is the value from image_name_var which it was in the begining
@@ -245,7 +247,7 @@ class App:
         # assigns each stratagem with the correct image of the stratagem
         a = 0
         for i in self.stratagems:
-            image = pygame.transform.smoothscale(pygame.image.load(self.stratagem_image[a]).convert_alpha(), (75, 75))
+            image = pygame.transform.smoothscale(pygame.image.load(self.stratagem_images[a]).convert_alpha(), (75, 75))
             image.set_alpha(100)
             i["image"] = image
             a += 1
