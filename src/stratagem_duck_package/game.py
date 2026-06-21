@@ -146,7 +146,7 @@ ER = {"name": "Eagle Rearm", "codeName": "ER", "code": "11212"}
 display_bg = pygame.Color(0, 0, 0) # background colour for pygame display
 class App:
     def asset_path(self, folder, filename):
-        return resources.files("stratagem_duck_package.assets").joinpath(folder, filename)
+        return resources.files("stratagem_duck_package.assets").joinpath(folder).joinpath(filename)
     def __init__(self):
         self.arrow_image = []
         self.stratagem_images = []
