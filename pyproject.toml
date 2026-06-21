@@ -13,7 +13,7 @@ authors = [
   { name="Braeden Sy Tan" }
 ]
 license = "GPL-3.0-or-later"
-dependencies = []
+dependencies = ["pygame>=2.6.0"]
 
 [project.urls]
 Homepage = "https://github.com/DuckyBoi-XD/Duck-Stratagem"
