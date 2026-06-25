@@ -1,6 +1,6 @@
 # Duck Stratagem
 
-The Helldivers 2 arcade game (Stratagem Hero) made with python using pygame
+This projct is basically just the Helldivers 2 arcade game (Stratagem Hero) made with python using pygame.
 
 ## Features
 
